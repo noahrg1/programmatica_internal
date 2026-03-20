@@ -240,10 +240,11 @@ function renderTable(){
   }).join('');
 }
 
+const TOTAL_REV=[69708.32, 102416.08, 132377.86, 119424.35, 136997.48, 139353.84, 116707.55, 96879.7, 131528.53, 133184.34, 130293.12, 162405.98, 123419.78, 149238.42];
 const REV_MONTHS=["Jan '25", "Feb '25", "Mar '25", "Apr '25", "May '25", "Jun '25", "Jul '25", "Aug '25", "Sep '25", "Oct '25", "Nov '25", "Dec '25", "Jan '26", "Feb '26"];
 const MONTHLY_REV={"100%": [0, 0, 0, 0, 0, 0, 23781.95, 14463.75, 15810.46, 8902.98, 9291.16, 6655.0, 5534.63, 3743.23], "ABC Business Sales": [0, 0, 10632.83, 7512.19, 7002.66, 7820.62, 434.22, 0.0, 0.0, 0, 0, 0, 0, 0], "Auckland Rugby": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 220.82], "Chicking NZ": [0, 0, 0, 0, 0, 6513.15, 1056.85, 310.9, 3294.76, 3768.01, 5149.99, 2534.91, 3223.12, 4599.77], "Goodair": [0, 0, 0, 0, 0, 0, 0, 3203.46, 15514.0, 4955.36, 8108.0, 3383.23, 306.35, 1839.23], "Impact Outdoors": [0, 0, 0, 0, 0, 0, 0, 0, 0, 3419.53, 580.15, 2899.98, 2999.84, 2149.2], "JAC": [4429.17, 4680.1, 4999.88, 5001.25, 4931.08, 5292.08, 4990.14, 5011.13, 5717.68, 6011.46, 6719.03, 6082.92, 5976.89, 14398.55], "Mad Butcher": [0, 0, 0, 0, 0, 0, 0, 2750.77, 3643.16, 4047.91, 3590.77, 3258.07, 3491.31, 3647.46], "Manukau Autos | Mitsubishi": [0, 0, 0, 0, 999.87, 13762.64, 11980.02, 7999.26, 6904.84, 7549.23, 7441.84, 7084.22, 7852.75, 7696.59], "NZ Eggs": [9086.52, 1404.83, 0.0, 0, 0, 0, 0, 0, 0, 5818.39, 0.0, 17235.18, 15834.6, 18045.07], "New Caledonia Tourism": [0, 0, 0, 0, 0, 8527.03, 10563.29, 0.0, 0, 0, 0, 0, 0, 10615.52], "Nissan NZ": [0, 0, 10478.86, 10006.12, 10001.02, 7770.29, 0, 0, 0, 0, 0, 0, 0, 0], "Original Foods | Cookie Pie": [0, 0, 0, 0, 0, 0, 0, 8476.49, 0.27, 0, 0, 0, 0, 0], "Pharmabroker NZ": [16108.12, 27412.28, 30421.46, 32072.04, 38422.43, 36579.84, 2999.74, 2997.31, 10787.99, 11919.22, 12028.53, 13744.31, 15877.16, 4136.95], "Power Farming | Deutz": [4399.72, 5548.2, 4447.1, 3999.21, 3991.96, 2115.51, 3370.56, 3674.66, 2519.77, 3324.02, 4402.7, 3563.52, 9292.59, 13782.84], "Power Farming | JCB": [3266.94, 14164.12, 5838.03, 3997.52, 8486.21, 2352.89, 4372.57, 4999.52, 4299.75, 4499.73, 4497.37, 4926.87, 5174.5, 6051.4], "Power Farming | Kioti": [4357.5, 4997.7, 4068.96, 3997.52, 8099.88, 2085.24, 1850.86, 1770.62, 1812.98, 1799.73, 1799.88, 1799.9, 1749.97, 1749.94], "Power Farming | Kverneland": [1836.34, 567.34, 1999.3, 1999.14, 1965.57, 2149.47, 2003.75, 1583.43, 1698.7, 2249.73, 2249.66, 4048.77, 4049.47, 4049.54], "Power Farming | McHale": [0, 0, 0, 0, 1936.72, 2043.44, 1994.24, 1884.99, 1739.98, 1800.02, 1905.58, 4862.48, 4949.67, 4949.77], "Power Farming | Merlo": [0, 2814.06, 3186.06, 3000.08, 1500.03, 0, 999.89, 999.72, 0, 0, 0, 0, 0, 0], "Rexona": [0, 0, 0, 0, 0, 2609.7, 19009.41, 10491.91, 0.0, 0.0, 0, 0, 0, 0], "South Auckland Ford": [82.11, 959.93, 1978.01, 0.48, 0, 0, 0, 0, 0, 0, 0, 1326.02, 0, 3601.05], "South Auckland Mazda": [920.18, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "South Auckland Motors": [0, 0, 0, 549.9, 2997.45, 1492.19, 113.92, 886.08, 0, 398.64, 0, 0, 0, 0], "Southpac Trucks": [0, 0, 0, 0, 0, 0, 0, 1021.97, 7449.36, 7550.65, 8575.84, 7543.84, 7548.18, 7925.33], "TRACTA | Case IH": [0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "TRACTA | Cropmark Seeds": [763.64, 5949.5, 6951.78, 1609.47, 0.0, 0, 158.73, 3549.65, 3450.46, 2937.92, 0.0, 167.04, 317.79, 5577.13], "TRACTA | Cropmark Seeds AU": [0, 2088.14, 2895.86, 2715.63, 0.0, 0, 0, 1230.74, 2648.85, 2236.41, 1883.49, 0.0, 0, 1688.57], "TRACTA | FMC Australia": [0, 0, 544.06, 758.93, 631.94, 0, 0, 0, 235.51, 873.53, 845.11, 873.78, 876.47, 793.47], "TRACTA | Farmside": [2499.55, 2499.21, 2548.38, 0.0, 1059.82, 2092.87, 1499.75, 1349.91, 1699.78, 0.0, 0, 0, 0, 1999.27], "TRACTA | Gallagher Animal Management": [0, 0, 0, 0, 0, 1253.79, 2347.44, 0.09, 1305.3, 1865.04, 1829.47, 0.0, 0, 433.26], "TRACTA | Incitec Pivot Fertilisers": [0, 0, 0, 254.15, 6463.58, 4972.23, 1138.14, 2266.01, 1468.55, 1494.73, 0.0, 0, 0, 0], "TRACTA | Knuckeys Agriculture - AU": [0, 0, 0, 0, 0, 471.51, 1513.16, 1011.51, 979.6, 1012.07, 985.93, 50.26, 0, 0], "TRACTA | Nedap": [1950.93, 9113.63, 6250.5, 13484.64, 39.78, 0, 0, 0, 5024.38, 3198.86, 6840.98, 17045.97, 0.01, 2109.82], "TRACTA | New Holland": [0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "TRACTA | OFI": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1098.19, 2541.04, 4729.16], "TRACTA | Precision Farming": [0, 0, 0, 0, 819.37, 1046.47, 478.23, 0, 0, 0, 0, 0, 0, 0], "TRACTA | Resupply": [0, 1745.25, 4559.87, 0, 1699.84, 2257.56, 0.0, 350.42, 1853.1, 1106.29, 0.0, 0, 0, 0], "TRACTA | Suzuki Marine": [4212.83, 1794.44, 7114.19, 2843.06, 4256.87, 1836.38, 2072.35, 2091.02, 3099.98, 1505.26, 1932.04, 3911.87, 2374.19, 2576.23], "TRACTA | Suzuki Motorcycle": [3439.54, 2499.08, 1770.21, 2228.02, 2171.98, 6525.52, 8959.9, 3397.63, 2781.56, 3818.31, 412.45, 542.13, 545.61, 704.92], "TRACTA | TUMU Group: TimberSpan": [0, 0, 0, 0, 0, 0, 0, 0, 600.93, 633.84, 307.28, 0, 0, 0], "TRACTA | Zoetis": [2458.88, 3197.94, 6543.31, 2486.63, 2459.52, 2820.47, 3242.09, 1250.31, 3806.67, 5812.19, 5242.83, 1294.65, 0, 0], "Tourisme Tahiti": [0, 0, 0, 13771.51, 16214.14, 0.0, 0.0, 0.0, 7996.76, 13409.1, 12258.59, 12957.11, 9224.74, 1497.52], "Toyworld NZ": [9896.35, 10980.33, 15149.21, 7136.86, 10845.76, 14962.95, 5776.35, 7856.44, 13383.4, 15266.18, 12428.84, 14996.34, 3834.61, 12062.35], "Travel South USA": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4456.74, 9844.29, 1864.46], "World Travellers": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8985.61, 14062.68, 0.0, 0]};
 
-let revChart=null;
+let revChart=null,showTotal=true;
 const activeRev=new Set();
 const REV_ADVS=Object.keys(MONTHLY_REV).sort((a,b)=>{
   const ta=MONTHLY_REV[a].reduce((x,y)=>x+y,0);
@@ -254,6 +255,20 @@ const REV_ADVS=Object.keys(MONTHLY_REV).sort((a,b)=>{
 function initRevenue(){
   const chips=document.getElementById('rev-chips');
   REV_ADVS.slice(0,6).forEach(a=>activeRev.add(a));
+  // Total line chip
+  showTotal=true;
+  const totalChip=document.createElement('div');
+  totalChip.className='adv-chip active';
+  totalChip.textContent='— Total Portfolio';
+  totalChip.style.background='#ffffff';
+  totalChip.style.color='#080C12';
+  totalChip.onclick=()=>{
+    showTotal=!showTotal;
+    if(showTotal){totalChip.classList.add('active');totalChip.style.background='#ffffff';totalChip.style.color='#080C12';}
+    else{totalChip.classList.remove('active');totalChip.style.background='';totalChip.style.color='';}
+    updateRevChart();
+  };
+  chips.appendChild(totalChip);
   REV_ADVS.forEach((adv,i)=>{
     const c=COLORS[i%COLORS.length];
     const ch=document.createElement('div');
@@ -278,10 +293,12 @@ function initRevenue(){
 
 function updateRevChart(){
   if(!revChart)return;
-  revChart.data.datasets=REV_ADVS.filter(a=>activeRev.has(a)).map((adv,i)=>{
+  const advDatasets=REV_ADVS.filter(a=>activeRev.has(a)).map((adv,i)=>{
     const idx=REV_ADVS.indexOf(adv);
     return {label:adv,data:MONTHLY_REV[adv],borderColor:COLORS[idx%COLORS.length],backgroundColor:COLORS[idx%COLORS.length]+'22',borderWidth:2,pointRadius:3,tension:0.3,fill:false};
   });
+  const totalDataset={label:'— Total Portfolio',data:TOTAL_REV,borderColor:'#ffffff',backgroundColor:'rgba(255,255,255,.05)',borderWidth:2.5,pointRadius:4,tension:0.3,fill:false,borderDash:[6,3]};
+  revChart.data.datasets=showTotal?[totalDataset,...advDatasets]:advDatasets;
   revChart.update();
 }
 
