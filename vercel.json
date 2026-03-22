@@ -1,9 +1,11 @@
 {
-  "version": 2,
-  "builds": [
-    { "src": "*.html", "use": "@vercel/static" }
+  "rewrites": [
+    { "source": "/", "destination": "/programmatica-dashboard.html" }
   ],
-  "routes": [
-    { "src": "/", "dest": "/programmatica-dashboard.html" }
+  "headers": [
+    {
+      "source": "/favicon.png",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }]
+    }
   ]
 }
