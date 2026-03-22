@@ -184,7 +184,7 @@ const scD=clean.filter(m=>m.impressions>0&&m.spend>0);
 new Chart(document.getElementById('chart-scatter'),{type:'scatter',data:{datasets:[{data:scD.map(m=>({x:Math.round(m.impressions/1000),y:Math.round(m.spend),label:m.advertiser})),backgroundColor:'rgba(34,201,122,.6)',pointRadius:6,pointHoverRadius:8}]},options:{...CD,plugins:{...CD.plugins,tooltip:{...CD.plugins.tooltip,callbacks:{label:c=>c.raw.label+': '+fmt(c.raw.x*1000)+' imps / $'+c.raw.y.toLocaleString()}}},scales:{x:{...CD.scales.x,title:{display:true,text:'Impressions',color:'#4A6070',font:{size:11}},ticks:{...CD.scales.x.ticks,callback:v=>fmt(v*1000)}},y:{...CD.scales.y,title:{display:true,text:'Spend (NZD)',color:'#4A6070',font:{size:11}},ticks:{...CD.scales.y.ticks,callback:v=>fmtD(v)}}}}});
 
 // ── MONTHLY TRENDS (with sub-tabs) ──
-let trendChart=null, trendMetric='conv';
+let trendChart=null, trendMetric='conv', showTrendTotal=true;
 const activeA=new Set();
 const TREND_DATA={conv:MONTHLY_CONV,imp:MONTHLY_IMP,clk:MONTHLY_CLK,vv:MONTHLY_VV};
 const TREND_LABELS={conv:'Conversions',imp:'Impressions',clk:'Clicks',vv:'Video Views'};
@@ -203,6 +203,20 @@ function setTrendMetric(metric, el){
 function initTrends(){
   const chips=document.getElementById('trend-chips');
   ALL_TREND_ADVS.slice(0,6).forEach(a=>activeA.add(a));
+  showTrendTotal=true;
+  const tTotalChip=document.createElement('div');
+  tTotalChip.id='trend-total-chip';
+  tTotalChip.className='adv-chip active';
+  tTotalChip.textContent='— Total Portfolio';
+  tTotalChip.style.background='#ffffff';
+  tTotalChip.style.color='#080C12';
+  tTotalChip.onclick=()=>{
+    showTrendTotal=!showTrendTotal;
+    if(showTrendTotal){tTotalChip.classList.add('active');tTotalChip.style.background='#ffffff';tTotalChip.style.color='#080C12';}
+    else{tTotalChip.classList.remove('active');tTotalChip.style.background='';tTotalChip.style.color='';}
+    updateTrend();
+  };
+  chips.appendChild(tTotalChip);
   ALL_TREND_ADVS.forEach((adv,i)=>{
     const c=COLORS[i%COLORS.length];
     const ch=document.createElement('div');
@@ -223,11 +237,13 @@ function initTrends(){
 function updateTrend(){
   if(!trendChart)return;
   const src=TREND_DATA[trendMetric];
-  const advs=Object.keys(src);
-  trendChart.data.datasets=ALL_TREND_ADVS.filter(a=>activeA.has(a)&&src[a]).map((adv,i)=>{
+  const advDatasets=ALL_TREND_ADVS.filter(a=>activeA.has(a)&&src[a]).map((adv,i)=>{
     const idx=ALL_TREND_ADVS.indexOf(adv);
     return {label:adv,data:src[adv],borderColor:COLORS[idx%COLORS.length],backgroundColor:COLORS[idx%COLORS.length]+'22',borderWidth:2,pointRadius:3,tension:0.3,fill:false};
   });
+  const totalData=MONTHS.map((_,i)=>Object.values(src).reduce((s,arr)=>s+(arr[i]||0),0));
+  const tTotalDataset={label:'— Total Portfolio',data:totalData,borderColor:'#ffffff',backgroundColor:'rgba(255,255,255,.05)',borderWidth:2.5,pointRadius:4,tension:0.3,fill:false,borderDash:[6,3]};
+  trendChart.data.datasets=showTrendTotal?[tTotalDataset,...advDatasets]:advDatasets;
   trendChart.update();
 }
 
