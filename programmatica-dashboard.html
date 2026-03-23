@@ -66,9 +66,9 @@ tr:hover td{background:rgba(255,255,255,.02)}
 </nav>
 <div class="tabs">
   <div class="tab active" onclick="showTab('overview')">Overview</div>
-  <div class="tab" onclick="showTab('trends')">Monthly Trends</div>
-  <div class="tab" onclick="showTab('revenue')">Monthly Revenue</div>
-  <div class="tab" onclick="showTab('deepdive')">Advertiser Deep Dive</div>
+  <div class="tab" onclick="showTab('trends')">DV360 | Monthly Trends</div>
+  <div class="tab" onclick="showTab('revenue')">DV360 | Monthly Revenue</div>
+  <div class="tab" onclick="showTab('deepdive')">DV360 | Deep Dive</div>
   <div class="tab" onclick="showTab('table')">Performance Table</div>
   <div class="tab" onclick="showTab('google')">Google Ads</div>
   <div class="tab" onclick="showTab('meta')">Meta Ads</div>
@@ -203,6 +203,62 @@ function showTab(id){
   if(id==='table'&&!tableBuilt)buildTable();
 }
 
+const OV_COMBINED=[
+{advertiser:"Pharmabroker",spend:568822.56,impressions:154475362,clicks:318187,conversions:137348.85,video_views:9479460,ctr:0.206,cpa:4.14,platforms:"DV360 + Google Ads + Meta Ads"},
+{advertiser:"Toyworld NZ",spend:477624.74,impressions:115618967,clicks:2189375,conversions:24383768.62,video_views:3256749,ctr:1.894,cpa:0.02,platforms:"DV360 + Google Ads"},
+{advertiser:"100% Home",spend:473648.44,impressions:81014259,clicks:451705,conversions:415754.22,video_views:408844,ctr:0.558,cpa:1.14,platforms:"DV360 + Google Ads"},
+{advertiser:"Impact Outdoors",spend:312489.4,impressions:33072900,clicks:182206,conversions:45828.54,video_views:1071377,ctr:0.551,cpa:6.82,platforms:"DV360 + Google Ads + Meta Ads"},
+{advertiser:"Mad Butcher",spend:275859.05,impressions:68114221,clicks:609592,conversions:646479.71,video_views:1346002,ctr:0.895,cpa:0.43,platforms:"DV360 + Google Ads + Meta Ads"},
+{advertiser:"NZ Eggs",spend:231963.44,impressions:30877254,clicks:235617,conversions:319296.52,video_views:2313755,ctr:0.763,cpa:0.73,platforms:"DV360 + Google Ads + Meta Ads"},
+{advertiser:"Chicking NZ",spend:231910.81,impressions:52067118,clicks:475115,conversions:557958.58,video_views:2518950,ctr:0.913,cpa:0.42,platforms:"DV360 + Google Ads + Meta Ads"},
+{advertiser:"JAC Trucks",spend:153140.27,impressions:67996583,clicks:160162,conversions:59045.71,video_views:4293257,ctr:0.236,cpa:2.59,platforms:"DV360 + Google Ads"},
+{advertiser:"Unknown Account (Meta)",spend:146805.9,impressions:21968313,clicks:649167,conversions:22706.0,video_views:150332,ctr:2.955,cpa:6.47,platforms:"Meta Ads"},
+{advertiser:"Power Farming | JCB",spend:119385.42,impressions:27692853,clicks:43753,conversions:27394.0,video_views:2367667,ctr:0.158,cpa:4.36,platforms:"DV360 + Meta Ads"},
+{advertiser:"Manukau Autos",spend:103596.29,impressions:30109197,clicks:83499,conversions:1578.0,video_views:609991,ctr:0.277,cpa:65.65,platforms:"DV360 + Meta Ads"},
+{advertiser:"Goodair",spend:97991.65,impressions:17521391,clicks:64226,conversions:55135.66,video_views:1641285,ctr:0.367,cpa:1.78,platforms:"DV360 + Google Ads + Meta Ads"},
+{advertiser:"TRACTA | Nedap",spend:95019.48,impressions:54357609,clicks:151756,conversions:32505,video_views:4122894,ctr:0.279,cpa:2.92,platforms:"DV360"},
+{advertiser:"Tourisme Tahiti",spend:87329.46,impressions:25043378,clicks:92558,conversions:7427,video_views:11760345,ctr:0.37,cpa:11.76,platforms:"DV360"},
+{advertiser:"Power Farming | Deutz",spend:82924.68,impressions:27735648,clicks:123830,conversions:84738,video_views:1316160,ctr:0.446,cpa:0.98,platforms:"DV360"},
+{advertiser:"Nissan NZ",spend:73616.9,impressions:1626000,clicks:602,conversions:0,video_views:1596818,ctr:0.037,cpa:0,platforms:"DV360"},
+{advertiser:"TRACTA | Suzuki Motorcycle",spend:71205.77,impressions:66096427,clicks:27169,conversions:17954,video_views:940063,ctr:0.041,cpa:3.97,platforms:"DV360"},
+{advertiser:"TRACTA | Zoetis",spend:68213.89,impressions:50468652,clicks:42480,conversions:9987,video_views:378025,ctr:0.084,cpa:6.83,platforms:"DV360"},
+{advertiser:"TRACTA | Suzuki Marine",spend:64819.41,impressions:45588533,clicks:42608,conversions:36675,video_views:1345822,ctr:0.093,cpa:1.77,platforms:"DV360"},
+{advertiser:"Power Farming NZ",spend:64384.97,impressions:14464352,clicks:135410,conversions:744.0,video_views:399722,ctr:0.936,cpa:86.54,platforms:"Meta Ads"},
+{advertiser:"Original Foods | Cookie Pie",spend:56286.49,impressions:5977569,clicks:91210,conversions:60291.15,video_views:29,ctr:1.526,cpa:0.93,platforms:"DV360 + Google Ads"},
+{advertiser:"Power Farming | Kioti",spend:54547.26,impressions:12129843,clicks:35628,conversions:38826,video_views:2092325,ctr:0.294,cpa:1.4,platforms:"DV360"},
+{advertiser:"TRACTA | Cropmark Seeds",spend:52214.42,impressions:37586831,clicks:64332,conversions:9092,video_views:464797,ctr:0.171,cpa:5.74,platforms:"DV360"},
+{advertiser:"Southpac Trucks",spend:47615.18,impressions:25342767,clicks:68909,conversions:691,video_views:130959,ctr:0.272,cpa:68.91,platforms:"DV360"},
+{advertiser:"ABC Business Sales",spend:42671.98,impressions:5432817,clicks:36784,conversions:36411.81,video_views:1371853,ctr:0.677,cpa:1.17,platforms:"DV360 + Google Ads"},
+{advertiser:"Rexona",spend:36628.86,impressions:9862112,clicks:20422,conversions:30476.0,video_views:1954256,ctr:0.207,cpa:1.2,platforms:"DV360 + Google Ads"},
+{advertiser:"TRACTA | Farmside",spend:35743.37,impressions:23878013,clicks:18989,conversions:23865,video_views:0,ctr:0.08,cpa:1.5,platforms:"DV360"},
+{advertiser:"Power Farming | Kverneland",spend:33231.91,impressions:8229645,clicks:61539,conversions:48077,video_views:1636321,ctr:0.748,cpa:0.69,platforms:"DV360"},
+{advertiser:"TRACTA | New Holland",spend:32989.93,impressions:21636892,clicks:13967,conversions:7424,video_views:149489,ctr:0.065,cpa:4.44,platforms:"DV360"},
+{advertiser:"New Caledonia Tourism",spend:29705.84,impressions:7840048,clicks:16439,conversions:882,video_views:3227518,ctr:0.21,cpa:33.68,platforms:"DV360"},
+{advertiser:"HGS",spend:29572.64,impressions:3400711,clicks:49226,conversions:69.0,video_views:10922,ctr:1.448,cpa:428.59,platforms:"Meta Ads"},
+{advertiser:"Power Farming | McHale",spend:28066.89,impressions:25025970,clicks:26551,conversions:0,video_views:4375522,ctr:0.106,cpa:0,platforms:"DV360"},
+{advertiser:"Travel South USA",spend:27484.07,impressions:12739366,clicks:42014,conversions:34539.01,video_views:52366,ctr:0.33,cpa:0.8,platforms:"DV360 + Google Ads + Meta Ads"},
+{advertiser:"TRACTA | Case IH",spend:26922.19,impressions:13020531,clicks:9004,conversions:2921,video_views:171396,ctr:0.069,cpa:9.22,platforms:"DV360"},
+{advertiser:"World Travellers",spend:23048.3,impressions:7208412,clicks:13441,conversions:17767,video_views:220705,ctr:0.186,cpa:1.3,platforms:"DV360"},
+{advertiser:"TRACTA | Cropmark Seeds AU",spend:19986.18,impressions:9857939,clicks:7456,conversions:4892,video_views:0,ctr:0.076,cpa:4.09,platforms:"DV360"},
+{advertiser:"TRACTA | Incitec Pivot Fertilisers",spend:18057.39,impressions:10986065,clicks:3684,conversions:1816,video_views:0,ctr:0.034,cpa:9.94,platforms:"DV360"},
+{advertiser:"South Auckland Ford",spend:16689.74,impressions:31606540,clicks:189309,conversions:25971,video_views:359506,ctr:0.599,cpa:0.64,platforms:"DV360"},
+{advertiser:"TRACTA | Resupply",spend:13572.34,impressions:4467610,clicks:7033,conversions:20154,video_views:246075,ctr:0.157,cpa:0.67,platforms:"DV360"},
+{advertiser:"Power Farming | Merlo",spend:12499.85,impressions:12796418,clicks:3638,conversions:0,video_views:0,ctr:0.028,cpa:0,platforms:"DV360"},
+{advertiser:"South Auckland Motors",spend:11395.44,impressions:2942665,clicks:32235,conversions:12847,video_views:0,ctr:1.095,cpa:0.89,platforms:"DV360"},
+{advertiser:"Power Farming AUS",spend:11298.73,impressions:536065,clicks:6953,conversions:167.91,video_views:24200,ctr:1.297,cpa:67.29,platforms:"Google Ads + Meta Ads"},
+{advertiser:"TRACTA | Gallagher Animal Management",spend:9034.39,impressions:5954439,clicks:3811,conversions:15145,video_views:0,ctr:0.064,cpa:0.6,platforms:"DV360"},
+{advertiser:"TRACTA | OFI",spend:8368.39,impressions:4750835,clicks:917,conversions:0,video_views:208857,ctr:0.019,cpa:0,platforms:"DV360"},
+{advertiser:"Farrimond | Cookie Pie",spend:6661.37,impressions:894470,clicks:15176,conversions:41.0,video_views:13005,ctr:1.697,cpa:162.47,platforms:"Google Ads + Meta Ads"},
+{advertiser:"TRACTA | FMC Australia",spend:6432.79,impressions:6291999,clicks:3608,conversions:0,video_views:0,ctr:0.057,cpa:0,platforms:"DV360"},
+{advertiser:"TRACTA | Knuckeys Agriculture - AU",spend:6024.04,impressions:5531009,clicks:8390,conversions:1791,video_views:62479,ctr:0.152,cpa:3.36,platforms:"DV360"},
+{advertiser:"South Auckland Mazda",spend:4649.11,impressions:1090665,clicks:926,conversions:2308,video_views:0,ctr:0.085,cpa:2.01,platforms:"DV360"},
+{advertiser:"Southern Autos",spend:3449.97,impressions:1023417,clicks:1767,conversions:0,video_views:8699,ctr:0.173,cpa:0,platforms:"DV360"},
+{advertiser:"TRACTA | Precision Farming",spend:2344.07,impressions:475015,clicks:233,conversions:234,video_views:0,ctr:0.049,cpa:10.02,platforms:"DV360"},
+{advertiser:"TRACTA | TUMU Group: TimberSpan",spend:1542.05,impressions:1971056,clicks:264,conversions:181,video_views:0,ctr:0.013,cpa:8.52,platforms:"DV360"},
+{advertiser:"Auckland Rugby",spend:414.47,impressions:68369,clicks:234,conversions:90.0,video_views:6179,ctr:0.342,cpa:4.61,platforms:"DV360 + Google Ads + Meta Ads"},
+{advertiser:"Ideology",spend:149.06,impressions:16611,clicks:224,conversions:0.0,video_views:0,ctr:1.349,cpa:0,platforms:"Meta Ads"}
+];
+
 // ── OVERVIEW ──
 const clean=MEDIA.filter(m=>m.spend>0||m.impressions>0);
 const ov_dv_sp=sum(clean.map(m=>m.spend)),ov_dv_im=sum(clean.map(m=>m.impressions)),ov_dv_cl=sum(clean.map(m=>m.clicks)),ov_dv_cv=sum(clean.map(m=>m.conversions)),ov_dv_vv=sum(clean.map(m=>m.video_views));
@@ -217,13 +273,13 @@ document.getElementById('kpi-row').innerHTML=[
   {cls:'at',label:'Total Video Views',val:fmt(tVV),sub:'DV360 + Google Ads + Meta'}
 ].map(k=>'<div class="kpi '+k.cls+'"><div class="label">'+k.label+'</div><div class="value">'+k.val+'</div><div class="sub">'+k.sub+'</div></div>').join('');
 
-const t15s=[...clean].sort((a,b)=>b.spend-a.spend).slice(0,15);
+const t15s=[...OV_COMBINED].sort((a,b)=>b.spend-a.spend).slice(0,15);
 new Chart(document.getElementById('chart-spend'),{type:'bar',data:{labels:t15s.map(m=>m.advertiser),datasets:[{data:t15s.map(m=>m.spend),backgroundColor:'rgba(0,180,180,.7)',borderColor:'#00B4B4',borderWidth:1,borderRadius:4}]},options:{...CD,indexAxis:'y',plugins:{...CD.plugins,tooltip:{...CD.plugins.tooltip,callbacks:{label:c=>' $'+c.raw.toLocaleString('en-NZ',{maximumFractionDigits:0})}}},scales:{x:{...CD.scales.x,ticks:{...CD.scales.x.ticks,callback:v=>fmtD(v)}},y:{...CD.scales.y,ticks:{...CD.scales.y.ticks,font:{size:10}}}}}});
-const t15c=[...clean].filter(m=>m.conversions>0).sort((a,b)=>b.conversions-a.conversions).slice(0,15);
+const t15c=[...OV_COMBINED].filter(m=>m.conversions>0).sort((a,b)=>b.conversions-a.conversions).slice(0,15);
 new Chart(document.getElementById('chart-conv'),{type:'bar',data:{labels:t15c.map(m=>m.advertiser),datasets:[{data:t15c.map(m=>m.conversions),backgroundColor:'rgba(255,107,53,.7)',borderColor:'#FF6B35',borderWidth:1,borderRadius:4}]},options:{...CD,indexAxis:'y',plugins:{...CD.plugins,tooltip:{...CD.plugins.tooltip,callbacks:{label:c=>' '+c.raw.toLocaleString()}}},scales:{x:{...CD.scales.x,ticks:{...CD.scales.x.ticks,callback:v=>fmt(v)}},y:{...CD.scales.y,ticks:{...CD.scales.y.ticks,font:{size:10}}}}}});
 const ctrD=[...clean].filter(m=>m.impressions>50000&&m.ctr<5).sort((a,b)=>b.ctr-a.ctr).slice(0,20);
 new Chart(document.getElementById('chart-ctr'),{type:'bar',data:{labels:ctrD.map(m=>m.advertiser),datasets:[{data:ctrD.map(m=>m.ctr),backgroundColor:'rgba(184,154,90,.7)',borderColor:'#B89A5A',borderWidth:1,borderRadius:4}]},options:{...CD,indexAxis:'y',plugins:{...CD.plugins,tooltip:{...CD.plugins.tooltip,callbacks:{label:c=>' '+c.raw+'%'}}},scales:{x:{...CD.scales.x,ticks:{...CD.scales.x.ticks,callback:v=>v+'%'}},y:{...CD.scales.y,ticks:{...CD.scales.y.ticks,font:{size:10}}}}}});
-const scD=clean.filter(m=>m.impressions>0&&m.spend>0);
+const scD=OV_COMBINED.filter(m=>m.impressions>0&&m.spend>0);
 new Chart(document.getElementById('chart-scatter'),{type:'scatter',data:{datasets:[{data:scD.map(m=>({x:Math.round(m.impressions/1000),y:Math.round(m.spend),label:m.advertiser})),backgroundColor:'rgba(34,201,122,.6)',pointRadius:6,pointHoverRadius:8}]},options:{...CD,plugins:{...CD.plugins,tooltip:{...CD.plugins.tooltip,callbacks:{label:c=>c.raw.label+': '+fmt(c.raw.x*1000)+' imps / $'+c.raw.y.toLocaleString()}}},scales:{x:{...CD.scales.x,title:{display:true,text:'Impressions',color:'#4A6070',font:{size:11}},ticks:{...CD.scales.x.ticks,callback:v=>fmt(v*1000)}},y:{...CD.scales.y,title:{display:true,text:'Spend (NZD)',color:'#4A6070',font:{size:11}},ticks:{...CD.scales.y.ticks,callback:v=>fmtD(v)}}}}});
 
 // ── MONTHLY TRENDS (with sub-tabs) ──
@@ -368,7 +424,7 @@ function renderDeepDive(){
 
 // ── TABLE ──
 let tableBuilt=false,sortCol=1,sortDir=-1;
-const maxSp=Math.max(...clean.map(m=>m.spend));
+const maxSp=Math.max(...OV_COMBINED.map(m=>m.spend));
 function buildTable(){tableBuilt=true;renderTable();}
 function sortTable(col){
   if(sortCol===col)sortDir*=-1;else{sortCol=col;sortDir=-1;}
@@ -377,11 +433,11 @@ function sortTable(col){
 }
 function renderTable(){
   const cols=[m=>m.advertiser,m=>m.spend,m=>m.impressions,m=>m.clicks,m=>m.ctr,m=>m.conversions,m=>m.conversions>0?m.spend/m.conversions:0,m=>m.video_views];
-  const s=[...clean].sort((a,b)=>{const av=cols[sortCol](a),bv=cols[sortCol](b);return typeof av==='string'?av.localeCompare(bv)*sortDir:(av-bv)*sortDir;});
+  const s=[...OV_COMBINED].sort((a,b)=>{const av=cols[sortCol](a),bv=cols[sortCol](b);return typeof av==='string'?av.localeCompare(bv)*sortDir:(av-bv)*sortDir;});
   document.getElementById('tbl-body').innerHTML=s.map(m=>{
     const cpa=m.conversions>0?'$'+(m.spend/m.conversions).toFixed(2):'—';
     const bw=Math.round(m.spend/maxSp*100);
-    return '<tr><td><span class="adv-name">'+m.advertiser+'</span></td><td class="num"><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:'+bw+'%"></div></div>'+fmtFull(m.spend)+'</div></td><td class="num">'+fmt(m.impressions)+'</td><td class="num">'+fmt(m.clicks)+'</td><td class="num">'+(m.ctr<5?m.ctr+'%':'—')+'</td><td class="num">'+fmt(m.conversions)+'</td><td class="num">'+cpa+'</td><td class="num">'+fmt(m.video_views)+'</td></tr>';
+    return '<tr><td><span class="adv-name">'+m.advertiser+'</span><div style="font-size:10px;color:var(--muted);margin-top:2px">'+m.platforms+'</div></td><td class="num"><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:'+bw+'%"></div></div>'+fmtFull(m.spend)+'</div></td><td class="num">'+fmt(m.impressions)+'</td><td class="num">'+fmt(m.clicks)+'</td><td class="num">'+(m.ctr<5?m.ctr+'%':'—')+'</td><td class="num">'+fmt(m.conversions)+'</td><td class="num">'+cpa+'</td><td class="num">'+fmt(m.video_views)+'</td></tr>';
   }).join('');
 }
 
