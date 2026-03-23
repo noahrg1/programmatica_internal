@@ -205,12 +205,16 @@ function showTab(id){
 
 // ── OVERVIEW ──
 const clean=MEDIA.filter(m=>m.spend>0||m.impressions>0);
-const tSpend=sum(clean.map(m=>m.spend)),tImps=sum(clean.map(m=>m.impressions)),tClicks=sum(clean.map(m=>m.clicks)),tConv=sum(clean.map(m=>m.conversions));
+const ov_dv_sp=sum(clean.map(m=>m.spend)),ov_dv_im=sum(clean.map(m=>m.impressions)),ov_dv_cl=sum(clean.map(m=>m.clicks)),ov_dv_cv=sum(clean.map(m=>m.conversions)),ov_dv_vv=sum(clean.map(m=>m.video_views));
+const ov_g_sp=G_TOT_SPEND.reduce((a,b)=>a+b,0),ov_g_im=G_TOT_IMP.reduce((a,b)=>a+b,0),ov_g_cl=G_TOT_CLK.reduce((a,b)=>a+b,0),ov_g_cv=G_TOT_CONV.reduce((a,b)=>a+b,0),ov_g_vv=G_TOT_VV.reduce((a,b)=>a+b,0);
+const ov_m_sp=M_TOT_SPEND.reduce((a,b)=>a+b,0),ov_m_im=M_TOT_IMP.reduce((a,b)=>a+b,0),ov_m_cl=M_TOT_CLK.reduce((a,b)=>a+b,0),ov_m_cv=M_TOT_CONV.reduce((a,b)=>a+b,0),ov_m_vv=M_TOT_VV.reduce((a,b)=>a+b,0);
+const tSpend=ov_dv_sp+ov_g_sp+ov_m_sp,tImps=ov_dv_im+ov_g_im+ov_m_im,tClicks=ov_dv_cl+ov_g_cl+ov_m_cl,tConv=ov_dv_cv+ov_g_cv+ov_m_cv,tVV=ov_dv_vv+ov_g_vv+ov_m_vv;
 document.getElementById('kpi-row').innerHTML=[
-  {cls:'at',label:'Total Spend',val:fmtFull(tSpend),sub:'NZD May 2024 – Feb 2026'},
-  {cls:'ao',label:'Total Impressions',val:fmt(tImps),sub:'Across '+clean.length+' advertisers'},
+  {cls:'at',label:'Total Spend',val:fmtFull(tSpend),sub:'All platforms · May 2024 – Feb 2026'},
+  {cls:'ao',label:'Total Impressions',val:fmt(tImps),sub:'DV360 + Google Ads + Meta'},
   {cls:'ag',label:'Total Clicks',val:fmt(tClicks),sub:'Avg CTR '+(tClicks/tImps*100).toFixed(3)+'%'},
-  {cls:'agr',label:'Total Conversions',val:fmt(tConv),sub:'Avg CPA $'+(tSpend/tConv).toFixed(2)}
+  {cls:'agr',label:'Total Conversions',val:fmt(tConv),sub:'Avg CPA $'+(tSpend/tConv).toFixed(2)},
+  {cls:'at',label:'Total Video Views',val:fmt(tVV),sub:'DV360 + Google Ads + Meta'}
 ].map(k=>'<div class="kpi '+k.cls+'"><div class="label">'+k.label+'</div><div class="value">'+k.val+'</div><div class="sub">'+k.sub+'</div></div>').join('');
 
 const t15s=[...clean].sort((a,b)=>b.spend-a.spend).slice(0,15);
