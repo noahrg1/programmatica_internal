@@ -188,6 +188,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
   <div class="tab" onclick="showTab('meta')">Meta Ads</div>
   <div class="tab" onclick="showTab('combined')">Cross-Platform</div>
   <div class="tab" onclick="showTab('alladvs')">All Advertisers</div>
+  <div class="tab" onclick="showTab('tracker')">Campaign Tracker</div>
 </div>
 
 <!-- OVERVIEW -->
@@ -322,7 +323,7 @@ const sum=a=>a.reduce((x,y)=>x+y,0);
 const CD={responsive:true,plugins:{legend:{display:false},tooltip:{backgroundColor:'#141E28',titleColor:'#E8E8E0',bodyColor:'#6A8090',borderColor:'#1A2535',borderWidth:1}},scales:{x:{grid:{color:'rgba(26,37,53,.6)'},ticks:{color:'#4A6070',font:{size:11}}},y:{grid:{color:'rgba(26,37,53,.6)'},ticks:{color:'#4A6070',font:{size:11}}}}};
 
 function showTab(id){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['overview','table','trends','revenue','deepdive','google','meta','combined','alladvs'][i]===id));
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['overview','table','trends','revenue','deepdive','google','meta','combined','alladvs','tracker'][i]===id));
   document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+id));
   if(id==='trends'&&!trendChart)initTrends();
   if(id==='revenue'&&!revChart)initRevenue();
@@ -331,6 +332,7 @@ function showTab(id){
   if(id==='meta'&&!metaChart)initMeta();
   if(id==='combined'&&!combinedChart)initCombined();
   if(id==='alladvs'&&!combAdvChart)initCombAdv();
+  if(id==='tracker'&&!trackerInited)initTracker();
   if(id==='table'&&!tableBuilt)buildTable();
 }
 
@@ -936,6 +938,244 @@ function buildABC2Table(){
   document.getElementById('abc2-tbody').innerHTML=rows.join('');
 }
 
+// ════════════════════════════════════════════════════════
+// ── CAMPAIGN TRACKER ────────────────────────────────────
+// ════════════════════════════════════════════════════════
+let trackerInited=false;
+let trackerEstimates={spend:0,imp:0,clk:0,vv:0,conv:0,cpm:0,cpc:0};
+
+const TRK_MONTHS=[
+  'May 2024','Jun 2024','Jul 2024','Aug 2024','Sep 2024','Oct 2024',
+  'Nov 2024','Dec 2024','Jan 2025','Feb 2025','Mar 2025','Apr 2025',
+  'May 2025','Jun 2025','Jul 2025','Aug 2025','Sep 2025','Oct 2025',
+  'Nov 2025','Dec 2025','Jan 2026','Feb 2026'
+];
+
+// Map canonical adv name → {g: sumFn, m: sumFn} for per-platform sums
+function trkGetActuals(advKey,si,ei){
+  const idxs=[];for(let i=si;i<=ei;i++)idxs.push(i);
+  let dv_sp=0,dv_im=0,dv_cl=0,dv_cv=0,dv_vv=0;
+  let g_sp=0,g_im=0,g_cl=0,g_cv=0,g_vv=0;
+  let m_sp=0,m_im=0,m_cl=0,m_cv=0,m_vv=0;
+
+  const sumArr=(arr)=>idxs.reduce((s,i)=>s+(arr&&arr[i]||0),0);
+
+  if(advKey==='__all__'){
+    // Use platform totals
+    idxs.forEach(i=>{
+      dv_sp+=COMB_DATA.dv360.spend[i]||0; dv_im+=COMB_DATA.dv360.imp[i]||0;
+      dv_cl+=COMB_DATA.dv360.clk[i]||0;  dv_cv+=COMB_DATA.dv360.conv[i]||0;
+      dv_vv+=COMB_DATA.dv360.vv[i]||0;
+      g_sp+=G_TOT_SPEND[i]||0; g_im+=G_TOT_IMP[i]||0; g_cl+=G_TOT_CLK[i]||0;
+      g_cv+=G_TOT_CONV[i]||0;  g_vv+=G_TOT_VV[i]||0;
+      m_sp+=M_TOT_SPEND[i]||0; m_im+=M_TOT_IMP[i]||0; m_cl+=M_TOT_CLK[i]||0;
+      m_cv+=M_TOT_CONV[i]||0;  m_vv+=M_TOT_VV[i]||0;
+    });
+  } else {
+    // Per-advertiser: Google + Meta use named arrays; DV360 = CA minus G minus M
+    const gKeys=Object.keys(G_SPEND).filter(k=>k===advKey||k.startsWith(advKey+' |')||k.startsWith(advKey+'|'));
+    const mKeys=Object.keys(M_SPEND).filter(k=>k===advKey||k===advKey+' (Direct)'||k===advKey+'(Direct)');
+    gKeys.forEach(k=>{g_sp+=sumArr(G_SPEND[k]);g_im+=sumArr(G_IMP[k]);g_cl+=sumArr(G_CLK[k]);g_cv+=sumArr(G_CONV[k]);g_vv+=sumArr(G_VV[k]);});
+    mKeys.forEach(k=>{m_sp+=sumArr(M_SPEND[k]);m_im+=sumArr(M_IMP[k]);m_cl+=sumArr(M_CLK[k]);m_cv+=sumArr(M_CONV[k]);m_vv+=sumArr(M_VV[k]);});
+    // CA_ is canonical combined — use it for totals, DV360 = CA - G - M
+    const ca_sp=sumArr(CA_SPEND[advKey]),ca_im=sumArr(CA_IMP[advKey]),ca_cl=sumArr(CA_CLK[advKey]);
+    const ca_cv=sumArr(CA_CONV[advKey]),ca_vv=sumArr(CA_VV[advKey]);
+    dv_sp=Math.max(0,ca_sp-g_sp-m_sp); dv_im=Math.max(0,ca_im-g_im-m_im);
+    dv_cl=Math.max(0,ca_cl-g_cl-m_cl); dv_cv=Math.max(0,ca_cv-g_cv-m_cv);
+    dv_vv=Math.max(0,ca_vv-g_vv-m_vv);
+  }
+
+  const tot_sp=dv_sp+g_sp+m_sp, tot_im=dv_im+g_im+m_im, tot_cl=dv_cl+g_cl+m_cl;
+  const tot_cv=dv_cv+g_cv+m_cv, tot_vv=dv_vv+g_vv+m_vv;
+  const tot_cpm=tot_im>0?(tot_sp/tot_im*1000):0;
+  const tot_cpc=tot_cl>0?(tot_sp/tot_cl):0;
+  return {
+    dv360:{sp:dv_sp,im:dv_im,cl:dv_cl,cv:dv_cv,vv:dv_vv,
+      cpm:dv_im>0?dv_sp/dv_im*1000:0, cpc:dv_cl>0?dv_sp/dv_cl:0},
+    google:{sp:g_sp,im:g_im,cl:g_cl,cv:g_cv,vv:g_vv,
+      cpm:g_im>0?g_sp/g_im*1000:0, cpc:g_cl>0?g_sp/g_cl:0},
+    meta:{sp:m_sp,im:m_im,cl:m_cl,cv:m_cv,vv:m_vv,
+      cpm:m_im>0?m_sp/m_im*1000:0, cpc:m_cl>0?m_sp/m_cl:0},
+    total:{sp:tot_sp,im:tot_im,cl:tot_cl,cv:tot_cv,vv:tot_vv,
+      cpm:tot_cpm, cpc:tot_cpc}
+  };
+}
+
+function trkPct(actual,est){
+  if(!est||est<=0)return null;
+  return (actual/est)*100;
+}
+
+function trkPctCell(actual,est,isCost){
+  const p=trkPct(actual,est);
+  if(p===null)return '<td style="text-align:right;padding:7px 10px;color:var(--muted)">—</td>';
+  const good=isCost?(p<=100):(p>=100);
+  const color=p>=100?(isCost?'#f87171':'#4ade80'):(p>=80?'#fb923c':'#f87171');
+  return '<td style="text-align:right;padding:7px 10px;font-weight:700;color:'+color+'">'+Math.round(p)+'%</td>';
+}
+
+function trkFmt(v,isCost){return isCost?fmtD(v):fmt(v);}
+
+function updateTrackerTable(){
+  const advKey=document.getElementById('trk-adv').value;
+  const si=parseInt(document.getElementById('trk-start').value);
+  const ei=parseInt(document.getElementById('trk-end').value);
+  if(si>ei){document.getElementById('trk-warning').style.display='block';return;}
+  document.getElementById('trk-warning').style.display='none';
+
+  const a=trkGetActuals(advKey,si,ei);
+  const est=trackerEstimates;
+  const cols=['sp','im','cl','vv','cpm','cpc'];
+  const isCost=[true,false,false,false,true,true];
+  const fmtFn=(v,ci)=>isCost[ci]?fmtD(v):fmt(v);
+
+  const makeRow=(label,data,bold)=>{
+    const s=bold?'font-weight:700;border-top:2px solid var(--border2)':'';
+    return '<tr style="'+s+'">'
+      +'<td style="padding:7px 10px">'+label+'</td>'
+      +cols.map((c,ci)=>'<td style="text-align:right;padding:7px 10px">'+fmtFn(data[c]||data[c.replace('sp','sp')]||0,ci)+'</td>').join('')
+      +'</tr>';
+  };
+
+  // Map col keys to data keys
+  const pick=(obj,c)=>{
+    const map={sp:'sp',im:'im',cl:'cl',vv:'vv',cv:'cv',cpm:'cpm',cpc:'cpc'};
+    return obj[map[c]]||0;
+  };
+
+  const makeDataRow=(label,obj,bold)=>{
+    const s=bold?'font-weight:700;border-top:2px solid var(--border2)':'';
+    return '<tr style="'+s+'">'
+      +'<td style="padding:7px 10px">'+label+'</td>'
+      +cols.map((c,ci)=>'<td style="text-align:right;padding:7px 10px">'+fmtFn(pick(obj,c),ci)+'</td>').join('')
+      +'</tr>';
+  };
+
+  const pctRow='<tr style="background:rgba(255,255,255,.04)">'
+    +'<td style="padding:7px 10px;font-weight:700">% Of Target</td>'
+    +cols.map((c,ci)=>{
+      const estKey=['spend','imp','clk','vv','cpm','cpc'][ci];
+      return trkPctCell(pick(a.total,c),est[estKey],isCost[ci]);
+    }).join('')
+    +'</tr>';
+
+  const estKeys=['spend','imp','clk','vv','cpm','cpc'];
+  const estRow='<tr>'
+    +'<td style="padding:7px 10px;font-weight:700">Campaign Estimates</td>'
+    +estKeys.map((k,ci)=>'<td style="padding:4px 6px"><input type="number" id="est-'+k+'" value="'+(est[k]||'')+'" placeholder="0" oninput="trackerEstimates[\''+k+'\']=parseFloat(this.value)||0;updateTrackerTable()" style="width:90px;background:var(--panel2);border:1px solid var(--border2);border-radius:6px;color:var(--text);padding:4px 8px;font-size:12px;text-align:right"></td>').join('')
+    +'</tr>';
+
+  let tbody='';
+  if(advKey==='__all__'){
+    tbody+=makeDataRow('DV360',a.dv360,false);
+    tbody+=makeDataRow('Google Ads',a.google,false);
+    tbody+=makeDataRow('Meta Ads',a.meta,false);
+    tbody+=makeDataRow('Totals',a.total,true);
+  } else {
+    tbody+=makeDataRow(advKey,a.total,false);
+  }
+  tbody+=pctRow;
+  tbody+=estRow;
+
+  document.getElementById('trk-tbody').innerHTML=tbody;
+
+  // Draw gauges
+  const gaugeEl=document.getElementById('trk-gauges');
+  gaugeEl.innerHTML='';
+  const gaugeMetrics=[
+    {key:'spend',label:'Media Spend',isCost:true},
+    {key:'imp',label:'Impressions',isCost:false},
+    {key:'clk',label:'Clicks',isCost:false},
+    {key:'vv',label:'Video Views',isCost:false},
+    {key:'cpm',label:'CPM',isCost:true},
+    {key:'cpc',label:'CPC',isCost:true}
+  ];
+  const actMap={spend:a.total.sp,imp:a.total.im,clk:a.total.cl,vv:a.total.vv,cpm:a.total.cpm,cpc:a.total.cpc};
+  gaugeMetrics.forEach(gm=>{
+    const pct=trkPct(actMap[gm.key],est[gm.key]);
+    const wrap=document.createElement('div');
+    wrap.style.cssText='display:flex;flex-direction:column;align-items:center;min-width:140px';
+    const canvas=document.createElement('canvas');
+    canvas.width=140; canvas.height=100;
+    wrap.appendChild(canvas);
+    gaugeEl.appendChild(wrap);
+    drawSpeedoGauge(canvas,pct,gm.label,gm.isCost);
+  });
+}
+
+function drawSpeedoGauge(canvas,pct,label,isCost){
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  const cx=W/2, cy=H*0.72, r=48;
+
+  // Color zones (semi-circle: left=0%, top=100%, right=200%)
+  const drawArc=(from,to,color)=>{
+    const sa=Math.PI*(1+from/200), ea=Math.PI*(1+to/200);
+    ctx.beginPath(); ctx.arc(cx,cy,r,sa,ea);
+    ctx.lineWidth=14; ctx.strokeStyle=color; ctx.stroke();
+  };
+
+  drawArc(0,200,'#1e2d3d');       // dark bg
+  drawArc(0,50,'#ef4444');        // red 0-50%
+  drawArc(50,100,'#f97316');      // orange 50-100%
+  drawArc(100,200,'#22c55e');     // green 100-200%
+
+  // Scale labels
+  ctx.fillStyle='#4a6070'; ctx.font='9px DM Mono,monospace'; ctx.textAlign='center';
+  ctx.fillText('0%', cx-r*1.08, cy+4);
+  ctx.fillText('200%', cx+r*1.1, cy+4);
+  ctx.fillText('100%', cx, cy-r-4);
+
+  if(pct!==null){
+    const clamp=Math.min(Math.max(pct,0),200);
+    const angle=Math.PI*(1+clamp/200);
+    // Needle shadow
+    ctx.save(); ctx.globalAlpha=0.25;
+    ctx.beginPath(); ctx.moveTo(cx+1,cy+1);
+    ctx.lineTo(cx+Math.cos(angle)*40+1,cy+Math.sin(angle)*40+1);
+    ctx.lineWidth=2; ctx.strokeStyle='#000'; ctx.lineCap='round'; ctx.stroke();
+    ctx.restore();
+    // Needle
+    ctx.beginPath(); ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+Math.cos(angle)*40,cy+Math.sin(angle)*40);
+    ctx.lineWidth=2; ctx.strokeStyle='#e2e8f0'; ctx.lineCap='round'; ctx.stroke();
+    // Center dot
+    ctx.beginPath(); ctx.arc(cx,cy,5,0,2*Math.PI);
+    ctx.fillStyle='#e2e8f0'; ctx.fill();
+    // Pct text
+    const good=isCost?(pct<=100):(pct>=100);
+    const textColor=pct>=100?(isCost?'#f87171':'#4ade80'):(pct>=80?'#fb923c':'#f87171');
+    ctx.fillStyle=textColor; ctx.font='bold 15px DM Sans,sans-serif'; ctx.textAlign='center';
+    ctx.fillText(Math.round(pct)+'%',cx,cy+18);
+  } else {
+    ctx.fillStyle='#4a6070'; ctx.font='12px DM Sans,sans-serif'; ctx.textAlign='center';
+    ctx.fillText('No estimate',cx,cy+16);
+  }
+  // Label
+  ctx.fillStyle='#8faab8'; ctx.font='11px DM Sans,sans-serif'; ctx.textAlign='center';
+  ctx.fillText(label,cx,cy-r+8);
+}
+
+function initTracker(){
+  trackerInited=true;
+  // Populate advertiser dropdown
+  const sel=document.getElementById('trk-adv');
+  Object.keys(CA_SPEND).sort().forEach(a=>{
+    const o=document.createElement('option'); o.value=a; o.textContent=a; sel.appendChild(o);
+  });
+  // Populate month dropdowns
+  TRK_MONTHS.forEach((m,i)=>{
+    const o1=document.createElement('option'); o1.value=i; o1.textContent=m;
+    if(i===0)o1.selected=true;
+    document.getElementById('trk-start').appendChild(o1);
+    const o2=document.createElement('option'); o2.value=i; o2.textContent=m;
+    if(i===TRK_MONTHS.length-1)o2.selected=true;
+    document.getElementById('trk-end').appendChild(o2);
+  });
+  updateTrackerTable();
+}
+
 </script>
 
 <!-- ── GOOGLE ADS PAGE ── -->
@@ -1063,6 +1303,60 @@ function buildABC2Table(){
       </div>
     </div>
   </div>
+</div>
+
+<!-- ── CAMPAIGN TRACKER PAGE ── -->
+<div class="page" id="page-tracker">
+
+  <!-- Controls -->
+  <div class="section">
+    <div style="display:flex;gap:20px;align-items:flex-end;flex-wrap:wrap;margin-bottom:4px">
+      <div>
+        <div class="kpi-label" style="margin-bottom:6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase">Advertiser</div>
+        <select id="trk-adv" onchange="if(trackerInited)updateTrackerTable()" style="background:var(--panel2);border:1px solid var(--border2);color:var(--text);padding:8px 12px;border-radius:8px;font-size:13px;min-width:200px">
+          <option value="__all__">All Advertisers</option>
+        </select>
+      </div>
+      <div>
+        <div class="kpi-label" style="margin-bottom:6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase">Flight Start</div>
+        <select id="trk-start" onchange="if(trackerInited)updateTrackerTable()" style="background:var(--panel2);border:1px solid var(--border2);color:var(--text);padding:8px 12px;border-radius:8px;font-size:13px"></select>
+      </div>
+      <div>
+        <div class="kpi-label" style="margin-bottom:6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase">Flight End</div>
+        <select id="trk-end" onchange="if(trackerInited)updateTrackerTable()" style="background:var(--panel2);border:1px solid var(--border2);color:var(--text);padding:8px 12px;border-radius:8px;font-size:13px"></select>
+      </div>
+    </div>
+    <div id="trk-warning" style="display:none;color:#f87171;font-size:12px;margin-top:8px">⚠ Start month must be before end month</div>
+  </div>
+
+  <!-- Performance Table -->
+  <div class="section">
+    <div class="chart-title">Campaign Performance vs Estimates</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:12px">Enter your campaign estimates in the bottom row. % of target updates automatically.</div>
+    <div class="table-wrap">
+      <table id="trk-table" style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr>
+            <th style="text-align:left;padding:8px 10px;border-bottom:1px solid var(--border2);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em;min-width:140px">Platform / Metric</th>
+            <th style="text-align:right;padding:8px 10px;border-bottom:1px solid var(--border2);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Media Spend</th>
+            <th style="text-align:right;padding:8px 10px;border-bottom:1px solid var(--border2);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Impressions</th>
+            <th style="text-align:right;padding:8px 10px;border-bottom:1px solid var(--border2);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Clicks</th>
+            <th style="text-align:right;padding:8px 10px;border-bottom:1px solid var(--border2);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Video Views</th>
+            <th style="text-align:right;padding:8px 10px;border-bottom:1px solid var(--border2);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">CPM</th>
+            <th style="text-align:right;padding:8px 10px;border-bottom:1px solid var(--border2);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">CPC</th>
+          </tr>
+        </thead>
+        <tbody id="trk-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Gauges -->
+  <div class="section">
+    <div class="chart-title">% Of Target Achieved</div>
+    <div id="trk-gauges" style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;padding:8px 0"></div>
+  </div>
+
 </div>
 
 </body>
