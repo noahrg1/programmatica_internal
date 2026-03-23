@@ -88,14 +88,21 @@ function updateCombAdv(){
 }
 
 
-// ── ABC2 FUNNEL TABLE (per-advertiser, respects chip toggles) ──
+// ── ABC2 FUNNEL TABLE (respects Total Portfolio toggle + chip selection) ──
 function buildABC2Table(){
   const sel=Array.from(activeCA);
   let total_eng=0,total_clk=0,total_vv=0;
   const rows=MONTHS.map((m,i)=>{
-    const eng=sel.reduce((s,a)=>(M_ENG[a]?s+(M_ENG[a][i]||0):s),0);
-    const clk=sel.reduce((s,a)=>(CA_CLK[a]?s+(CA_CLK[a][i]||0):s),0);
-    const vv=sel.reduce((s,a)=>(CA_VV[a]?s+(CA_VV[a][i]||0):s),0);
+    let eng,clk,vv;
+    if(showCombAdvTotal){
+      eng=ABC2_ENGAGE[i]||0;
+      clk=CA_TOT_CLK[i]||0;
+      vv=CA_TOT_VV[i]||0;
+    } else {
+      eng=sel.reduce((s,a)=>(M_ENG[a]?s+(M_ENG[a][i]||0):s),0);
+      clk=sel.reduce((s,a)=>(CA_CLK[a]?s+(CA_CLK[a][i]||0):s),0);
+      vv=sel.reduce((s,a)=>(CA_VV[a]?s+(CA_VV[a][i]||0):s),0);
+    }
     total_eng+=eng; total_clk+=clk; total_vv+=vv;
     return '<tr><td style="padding:7px 12px;border-bottom:1px solid var(--border)">'+m+'</td>'
       +'<td class="num" style="padding:7px 12px;border-bottom:1px solid var(--border);text-align:right">'+Math.round(eng).toLocaleString()+'</td>'
@@ -900,14 +907,21 @@ function updateCombAdv(){
 }
 
 
-// ── ABC2 FUNNEL TABLE (per-advertiser, respects chip toggles) ──
+// ── ABC2 FUNNEL TABLE (respects Total Portfolio toggle + chip selection) ──
 function buildABC2Table(){
   const sel=Array.from(activeCA);
   let total_eng=0,total_clk=0,total_vv=0;
   const rows=MONTHS.map((m,i)=>{
-    const eng=sel.reduce((s,a)=>(M_ENG[a]?s+(M_ENG[a][i]||0):s),0);
-    const clk=sel.reduce((s,a)=>(CA_CLK[a]?s+(CA_CLK[a][i]||0):s),0);
-    const vv=sel.reduce((s,a)=>(CA_VV[a]?s+(CA_VV[a][i]||0):s),0);
+    let eng,clk,vv;
+    if(showCombAdvTotal){
+      eng=ABC2_ENGAGE[i]||0;
+      clk=CA_TOT_CLK[i]||0;
+      vv=CA_TOT_VV[i]||0;
+    } else {
+      eng=sel.reduce((s,a)=>(M_ENG[a]?s+(M_ENG[a][i]||0):s),0);
+      clk=sel.reduce((s,a)=>(CA_CLK[a]?s+(CA_CLK[a][i]||0):s),0);
+      vv=sel.reduce((s,a)=>(CA_VV[a]?s+(CA_VV[a][i]||0):s),0);
+    }
     total_eng+=eng; total_clk+=clk; total_vv+=vv;
     return '<tr><td style="padding:7px 12px;border-bottom:1px solid var(--border)">'+m+'</td>'
       +'<td class="num" style="padding:7px 12px;border-bottom:1px solid var(--border);text-align:right">'+Math.round(eng).toLocaleString()+'</td>'
