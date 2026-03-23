@@ -1028,20 +1028,7 @@ function updateTrackerTable(){
   const cols=['sp','im','cl','vv','cpm','cpc'];
   const isCost=[true,false,false,false,true,true];
   const fmtFn=(v,ci)=>isCost[ci]?fmtD(v):fmt(v);
-
-  const makeRow=(label,data,bold)=>{
-    const s=bold?'font-weight:700;border-top:2px solid var(--border2)':'';
-    return '<tr style="'+s+'">'
-      +'<td style="padding:7px 10px">'+label+'</td>'
-      +cols.map((c,ci)=>'<td style="text-align:right;padding:7px 10px">'+fmtFn(data[c]||data[c.replace('sp','sp')]||0,ci)+'</td>').join('')
-      +'</tr>';
-  };
-
-  // Map col keys to data keys
-  const pick=(obj,c)=>{
-    const map={sp:'sp',im:'im',cl:'cl',vv:'vv',cv:'cv',cpm:'cpm',cpc:'cpc'};
-    return obj[map[c]]||0;
-  };
+  const pick=(obj,c)=>obj[c]||0;
 
   const makeDataRow=(label,obj,bold)=>{
     const s=bold?'font-weight:700;border-top:2px solid var(--border2)':'';
@@ -1059,12 +1046,6 @@ function updateTrackerTable(){
     }).join('')
     +'</tr>';
 
-  const estKeys=['spend','imp','clk','vv','cpm','cpc'];
-  const estRow='<tr>'
-    +'<td style="padding:7px 10px;font-weight:700">Campaign Estimates</td>'
-    +estKeys.map((k,ci)=>'<td style="padding:4px 6px"><input type="number" id="est-'+k+'" value="'+(est[k]||'')+'" placeholder="0" oninput="trackerEstimates[\''+k+'\']=parseFloat(this.value)||0;updateTrackerTable()" style="width:90px;background:var(--panel2);border:1px solid var(--border2);border-radius:6px;color:var(--text);padding:4px 8px;font-size:12px;text-align:right"></td>').join('')
-    +'</tr>';
-
   let tbody='';
   if(advKey==='__all__'){
     tbody+=makeDataRow('DV360',a.dv360,false);
@@ -1075,8 +1056,6 @@ function updateTrackerTable(){
     tbody+=makeDataRow(advKey,a.total,false);
   }
   tbody+=pctRow;
-  tbody+=estRow;
-
   document.getElementById('trk-tbody').innerHTML=tbody;
 
   // Draw gauges
@@ -1173,6 +1152,20 @@ function initTracker(){
     if(i===TRK_MONTHS.length-1)o2.selected=true;
     document.getElementById('trk-end').appendChild(o2);
   });
+  // Build estimate inputs row once in tfoot (persists across table rebuilds)
+  const estKeys=['spend','imp','clk','vv','cpm','cpc'];
+  const estLabels=['Media Spend','Impressions','Clicks','Video Views','CPM','CPC'];
+  const tfoot=document.getElementById('trk-tfoot');
+  const estRow=document.createElement('tr');
+  estRow.style.cssText='border-top:2px solid var(--teal)';
+  estRow.innerHTML='<td style="padding:8px 10px;font-weight:700;color:var(--teal)">Campaign Estimates</td>'
+    +estKeys.map((k,ci)=>'<td style="padding:5px 6px;text-align:right">'
+      +'<input type="number" id="est-'+k+'" placeholder="Enter target" '
+      +'onchange="trackerEstimates[''+k+'']=parseFloat(this.value)||0;updateTrackerTable()" '
+      +'style="width:100%;background:var(--panel2);border:1px solid var(--border2);border-radius:6px;'
+      +'color:var(--text);padding:5px 8px;font-size:12px;text-align:right;box-sizing:border-box">'
+      +'</td>').join('');
+  tfoot.appendChild(estRow);
   updateTrackerTable();
 }
 
@@ -1347,6 +1340,7 @@ function initTracker(){
           </tr>
         </thead>
         <tbody id="trk-tbody"></tbody>
+        <tfoot id="trk-tfoot"></tfoot>
       </table>
     </div>
   </div>
