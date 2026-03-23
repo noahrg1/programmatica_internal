@@ -242,6 +242,13 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
 <!-- TABLE -->
 <div class="page" id="page-table">
+  <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card);border-radius:8px;margin-bottom:12px;flex-wrap:wrap">
+    <span style="font-size:13px;font-weight:600;color:var(--muted)">Date Range:</span>
+    <select id="tbl-start" onchange="renderTable()" style="background:var(--bg);color:var(--fg);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:13px"></select>
+    <span style="color:var(--muted);font-size:13px">to</span>
+    <select id="tbl-end" onchange="renderTable()" style="background:var(--bg);color:var(--fg);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:13px"></select>
+    <button onclick="document.getElementById('tbl-start').value=0;document.getElementById('tbl-end').value=21;renderTable()" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer">All Time</button>
+  </div>
   <div class="tbl-wrap"><table id="perf-table">
     <thead><tr>
       <th onclick="sortTable(0)">Advertiser</th>
@@ -252,6 +259,8 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <th class="num" onclick="sortTable(5)">Conversions</th>
       <th class="num" onclick="sortTable(6)">CPA (NZD)</th>
       <th class="num" onclick="sortTable(7)">Video Views</th>
+      <th class="num" onclick="sortTable(8)">CPM (NZD)</th>
+      <th class="num" onclick="sortTable(9)">CPC (NZD)</th>
     </tr></thead>
     <tbody id="tbl-body"></tbody>
   </table></div>
@@ -555,20 +564,47 @@ function renderDeepDive(){
 
 // ── TABLE ──
 let tableBuilt=false,sortCol=1,sortDir=-1;
-const maxSp=Math.max(...OV_COMBINED.map(m=>m.spend));
-function buildTable(){tableBuilt=true;renderTable();}
+function buildTable(){
+  if(tableBuilt)return;
+  tableBuilt=true;
+  const opts=MONTHS.map((m,i)=>'<option value="'+i+'">'+m+'</option>').join('');
+  document.getElementById('tbl-start').innerHTML=opts;
+  document.getElementById('tbl-end').innerHTML=opts;
+  document.getElementById('tbl-end').value=MONTHS.length-1;
+  renderTable();
+}
 function sortTable(col){
   if(sortCol===col)sortDir*=-1;else{sortCol=col;sortDir=-1;}
   document.querySelectorAll('#perf-table th').forEach((th,i)=>th.classList.toggle('sorted',i===col));
   renderTable();
 }
 function renderTable(){
-  const cols=[m=>m.advertiser,m=>m.spend,m=>m.impressions,m=>m.clicks,m=>m.ctr,m=>m.conversions,m=>m.conversions>0?m.spend/m.conversions:0,m=>m.video_views];
-  const s=[...OV_COMBINED].sort((a,b)=>{const av=cols[sortCol](a),bv=cols[sortCol](b);return typeof av==='string'?av.localeCompare(bv)*sortDir:(av-bv)*sortDir;});
+  const siEl=document.getElementById('tbl-start'),eiEl=document.getElementById('tbl-end');
+  const si=siEl&&siEl.value!==''?+siEl.value:0;
+  const ei=eiEl&&eiEl.value!==''?+eiEl.value:MONTHS.length-1;
+  const lo=Math.min(si,ei),hi=Math.max(si,ei);
+  const isFullRange=(lo===0&&hi===MONTHS.length-1);
+  const idxs=[];for(let i=lo;i<=hi;i++)idxs.push(i);
+  const fmtMon=v=>v>=1000?fmtD(v):'$'+v.toFixed(2);
+  const rows=OV_COMBINED.map(m=>{
+    if(isFullRange)return {...m,cpm:m.impressions>0?m.spend/m.impressions*1000:0,cpc:m.clicks>0?m.spend/m.clicks:0};
+    const adv=m.advertiser;
+    const sumA=arr=>arr&&arr[adv]?idxs.reduce((s,i)=>s+(arr[adv][i]||0),0):0;
+    const sp=sumA(CA_SPEND),im=sumA(CA_IMP),cl=sumA(CA_CLK),cv=sumA(CA_CONV),vv=sumA(CA_VV);
+    return {...m,spend:sp,impressions:im,clicks:cl,conversions:cv,video_views:vv,
+      ctr:im>0?cl/im*100:0,cpm:im>0?sp/im*1000:0,cpc:cl>0?sp/cl:0};
+  });
+  const colFns=[m=>m.advertiser,m=>m.spend,m=>m.impressions,m=>m.clicks,m=>m.ctr,m=>m.conversions,m=>m.conversions>0?m.spend/m.conversions:0,m=>m.video_views,m=>m.cpm||0,m=>m.cpc||0];
+  const s=[...rows].sort((a,b)=>{const av=colFns[sortCol](a),bv=colFns[sortCol](b);return typeof av==='string'?av.localeCompare(bv)*sortDir:(av-bv)*sortDir;});
+  const dynMax=Math.max(...s.map(r=>r.spend),1);
   document.getElementById('tbl-body').innerHTML=s.map(m=>{
     const cpa=m.conversions>0?'$'+(m.spend/m.conversions).toFixed(2):'—';
-    const bw=Math.round(m.spend/maxSp*100);
-    return '<tr><td><span class="adv-name">'+m.advertiser+'</span><div style="font-size:10px;color:var(--muted);margin-top:2px">'+m.platforms+'</div></td><td class="num"><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:'+bw+'%"></div></div>'+fmtFull(m.spend)+'</div></td><td class="num">'+fmt(m.impressions)+'</td><td class="num">'+fmt(m.clicks)+'</td><td class="num">'+(m.ctr<5?m.ctr+'%':'—')+'</td><td class="num">'+fmt(m.conversions)+'</td><td class="num">'+cpa+'</td><td class="num">'+fmt(m.video_views)+'</td></tr>';
+    const cpm=m.impressions>0?fmtMon(m.spend/m.impressions*1000):'—';
+    const cpc=m.clicks>0?fmtMon(m.spend/m.clicks):'—';
+    const ctrV=m.impressions>0?m.clicks/m.impressions*100:(m.ctr||0);
+    const ctrDisp=ctrV>0&&ctrV<5?ctrV.toFixed(3)+'%':'—';
+    const bw=Math.round(m.spend/dynMax*100);
+    return '<tr><td><span class="adv-name">'+m.advertiser+'</span><div style="font-size:10px;color:var(--muted);margin-top:2px">'+m.platforms+'</div></td><td class="num"><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:'+bw+'%"></div></div>'+fmtFull(m.spend)+'</div></td><td class="num">'+fmt(m.impressions)+'</td><td class="num">'+fmt(m.clicks)+'</td><td class="num">'+ctrDisp+'</td><td class="num">'+fmt(m.conversions)+'</td><td class="num">'+cpa+'</td><td class="num">'+fmt(m.video_views)+'</td><td class="num">'+cpm+'</td><td class="num">'+cpc+'</td></tr>';
   }).join('');
 }
 
