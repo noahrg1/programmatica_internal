@@ -832,8 +832,17 @@ function setCombAdvMetric(metric,el){
   combAdvMetric=metric;
   el.closest('.sub-tabs').querySelectorAll('.sub-tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
-  document.getElementById('alladvs-chart-title').textContent='Monthly '+CA_LABELS[metric]+' — All Advertisers (Combined)';
-  updateCombAdv();
+  if(metric==='abc2'){
+    document.getElementById('alladvs-chart-title').textContent='ABC2 Funnel — Monthly Summary';
+    document.getElementById('alladvs-chart-wrap').style.display='none';
+    document.getElementById('abc2-table-section').style.display='block';
+    buildABC2Table();
+  } else {
+    document.getElementById('alladvs-chart-title').textContent='Monthly '+CA_LABELS[metric]+' — All Advertisers (Combined)';
+    document.getElementById('alladvs-chart-wrap').style.display='block';
+    document.getElementById('abc2-table-section').style.display='none';
+    updateCombAdv();
+  }
 }
 
 function initCombAdv(){
@@ -877,6 +886,7 @@ function initCombAdv(){
 }
 
 function updateCombAdv(){
+  if(combAdvMetric==='abc2'){buildABC2Table();return;}
   if(!combAdvChart)return;
   const src=CA_DATA[combAdvMetric];
   const advDs=ALL_CA_ADVS.filter(a=>activeCA.has(a)).map((adv,i)=>{
