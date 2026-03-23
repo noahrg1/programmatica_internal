@@ -952,24 +952,26 @@ const TRK_MONTHS=[
 ];
 
 // Map canonical adv name → {g: sumFn, m: sumFn} for per-platform sums
-function trkGetActuals(advKey,si,ei){
+function trkGetActuals(advKey,si,ei,startMult,endMult){
   const idxs=[];for(let i=si;i<=ei;i++)idxs.push(i);
   let dv_sp=0,dv_im=0,dv_cl=0,dv_cv=0,dv_vv=0;
   let g_sp=0,g_im=0,g_cl=0,g_cv=0,g_vv=0;
   let m_sp=0,m_im=0,m_cl=0,m_cv=0,m_vv=0;
 
-  const sumArr=(arr)=>idxs.reduce((s,i)=>s+(arr&&arr[i]||0),0);
+  const mult=(i)=>i===si?startMult:(i===ei&&si!==ei?endMult:1);
+  const sumArr=(arr)=>idxs.reduce((s,i)=>s+(arr&&arr[i]||0)*mult(i),0);
 
   if(advKey==='__all__'){
     // Use platform totals
     idxs.forEach(i=>{
-      dv_sp+=COMB_DATA.dv360.spend[i]||0; dv_im+=COMB_DATA.dv360.imp[i]||0;
-      dv_cl+=COMB_DATA.dv360.clk[i]||0;  dv_cv+=COMB_DATA.dv360.conv[i]||0;
-      dv_vv+=COMB_DATA.dv360.vv[i]||0;
-      g_sp+=G_TOT_SPEND[i]||0; g_im+=G_TOT_IMP[i]||0; g_cl+=G_TOT_CLK[i]||0;
-      g_cv+=G_TOT_CONV[i]||0;  g_vv+=G_TOT_VV[i]||0;
-      m_sp+=M_TOT_SPEND[i]||0; m_im+=M_TOT_IMP[i]||0; m_cl+=M_TOT_CLK[i]||0;
-      m_cv+=M_TOT_CONV[i]||0;  m_vv+=M_TOT_VV[i]||0;
+      const m=mult(i);
+      dv_sp+=(COMB_DATA.dv360.spend[i]||0)*m; dv_im+=(COMB_DATA.dv360.imp[i]||0)*m;
+      dv_cl+=(COMB_DATA.dv360.clk[i]||0)*m;  dv_cv+=(COMB_DATA.dv360.conv[i]||0)*m;
+      dv_vv+=(COMB_DATA.dv360.vv[i]||0)*m;
+      g_sp+=(G_TOT_SPEND[i]||0)*m; g_im+=(G_TOT_IMP[i]||0)*m; g_cl+=(G_TOT_CLK[i]||0)*m;
+      g_cv+=(G_TOT_CONV[i]||0)*m;  g_vv+=(G_TOT_VV[i]||0)*m;
+      m_sp+=(M_TOT_SPEND[i]||0)*m; m_im+=(M_TOT_IMP[i]||0)*m; m_cl+=(M_TOT_CLK[i]||0)*m;
+      m_cv+=(M_TOT_CONV[i]||0)*m;  m_vv+=(M_TOT_VV[i]||0)*m;
     });
   } else {
     // Per-advertiser: Google + Meta use named arrays; DV360 = CA minus G minus M
@@ -1023,7 +1025,10 @@ function updateTrackerTable(){
   if(si>ei){document.getElementById('trk-warning').style.display='block';return;}
   document.getElementById('trk-warning').style.display='none';
 
-  const a=trkGetActuals(advKey,si,ei);
+  const daysStart=Math.min(Math.max(parseFloat(document.getElementById('trk-days-start').value)||30,1),31);
+  const daysEnd=Math.min(Math.max(parseFloat(document.getElementById('trk-days-end').value)||30,1),31);
+  const startMult=daysStart/30, endMult=daysEnd/30;
+  const a=trkGetActuals(advKey,si,ei,startMult,endMult);
   const est=trackerEstimates;
   const cols=['sp','im','cl','vv','cpm','cpc'];
   const isCost=[true,false,false,false,true,true];
@@ -1341,6 +1346,20 @@ function initTracker(){
       <div>
         <div class="kpi-label" style="margin-bottom:6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase">Flight End</div>
         <select id="trk-end" onchange="if(trackerInited)updateTrackerTable()" style="background:var(--panel2);border:1px solid var(--border2);color:var(--text);padding:8px 12px;border-radius:8px;font-size:13px"></select>
+      </div>
+      <div>
+        <div class="kpi-label" style="margin-bottom:6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase">First month days</div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <input type="number" id="trk-days-start" min="1" max="31" value="30" onchange="if(trackerInited)updateTrackerTable()" style="width:64px;background:var(--panel2);border:1px solid var(--border2);color:var(--text);padding:8px 10px;border-radius:8px;font-size:13px;text-align:center">
+          <span style="color:var(--muted);font-size:12px">/ 30</span>
+        </div>
+      </div>
+      <div>
+        <div class="kpi-label" style="margin-bottom:6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase">Last month days</div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <input type="number" id="trk-days-end" min="1" max="31" value="30" onchange="if(trackerInited)updateTrackerTable()" style="width:64px;background:var(--panel2);border:1px solid var(--border2);color:var(--text);padding:8px 10px;border-radius:8px;font-size:13px;text-align:center">
+          <span style="color:var(--muted);font-size:12px">/ 30</span>
+        </div>
       </div>
     </div>
     <div id="trk-warning" style="display:none;color:#f87171;font-size:12px;margin-top:8px">⚠ Start month must be before end month</div>
