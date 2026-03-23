@@ -557,7 +557,7 @@ function buildMetaTable(){
 }
 
 // ── CROSS-PLATFORM ──
-let combinedChart=null,combinedMetric='spend';
+let combinedChart=null,combinedMetric='spend',showCombinedTotal=true;
 const activePlatforms=new Set(['dv360','google','meta']);
 const PLAT_COLORS={dv360:'#00B4B4',google:'#FF6B35',meta:'#4A9EFF'};
 const PLAT_NAMES={dv360:'DV360',google:'Google Ads',meta:'Meta Ads'};
@@ -585,6 +585,17 @@ function initCombined(){
     return '<div class="kpi-card" style="border-top:3px solid '+PLAT_COLORS[p]+'"><div class="kpi-label">'+PLAT_NAMES[p]+' Spend</div><div class="kpi-value">'+fmtFull(s)+'</div><div class="kpi-sub">'+pct+'% of total</div></div>';
   }).join('')+'<div class="kpi-card"><div class="kpi-label">Combined Spend</div><div class="kpi-value">'+fmtFull(totalAllSpend)+'</div><div class="kpi-sub">All platforms</div></div>';
   const chips=document.getElementById('combined-chips');
+  showCombinedTotal=true;
+  const cTotChip=document.createElement('div');
+  cTotChip.className='adv-chip active';cTotChip.textContent='— Total (All Platforms)';
+  cTotChip.style.background='#ffffff';cTotChip.style.color='#080C12';
+  cTotChip.onclick=()=>{
+    showCombinedTotal=!showCombinedTotal;
+    if(showCombinedTotal){cTotChip.classList.add('active');cTotChip.style.background='#ffffff';cTotChip.style.color='#080C12';}
+    else{cTotChip.classList.remove('active');cTotChip.style.background='';cTotChip.style.color='';}
+    updateCombined();
+  };
+  chips.appendChild(cTotChip);
   ['dv360','google','meta'].forEach(p=>{
     const ch=document.createElement('div');
     ch.className='adv-chip active';ch.textContent=PLAT_NAMES[p];
@@ -603,12 +614,14 @@ function initCombined(){
 
 function updateCombined(){
   if(!combinedChart)return;
-  const datasets=['dv360','google','meta'].filter(p=>activePlatforms.has(p)).map(p=>({
+  const advDs=['dv360','google','meta'].filter(p=>activePlatforms.has(p)).map(p=>({
     label:PLAT_NAMES[p],data:COMB_DATA[p][combinedMetric],
     borderColor:PLAT_COLORS[p],backgroundColor:PLAT_COLORS[p]+'33',
     borderWidth:2.5,pointRadius:4,tension:0.3,fill:true
   }));
-  combinedChart.data.datasets=datasets;
+  const totalData=MONTHS.map((_,i)=>['dv360','google','meta'].reduce((s,p)=>s+(COMB_DATA[p][combinedMetric][i]||0),0));
+  const totDs={label:'— Total (All Platforms)',data:totalData,borderColor:'#ffffff',backgroundColor:'rgba(255,255,255,.05)',borderWidth:2.5,pointRadius:4,tension:0.3,fill:false,borderDash:[6,3]};
+  combinedChart.data.datasets=showCombinedTotal?[totDs,...advDs]:advDs;
   combinedChart.options.scales.y.ticks.callback=v=>combinedMetric==='spend'?fmtD(v):fmt(v);
   combinedChart.update();
 }
