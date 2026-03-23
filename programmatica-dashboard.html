@@ -20,8 +20,17 @@ function setCombAdvMetric(metric,el){
   combAdvMetric=metric;
   el.closest('.sub-tabs').querySelectorAll('.sub-tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
-  document.getElementById('alladvs-chart-title').textContent='Monthly '+CA_LABELS[metric]+' — All Advertisers (Combined)';
-  updateCombAdv();
+  if(metric==='abc2'){
+    document.getElementById('alladvs-chart-title').textContent='ABC2 Funnel — Monthly Summary';
+    document.getElementById('alladvs-chart-wrap').style.display='none';
+    document.getElementById('abc2-table-section').style.display='block';
+    buildABC2Table();
+  } else {
+    document.getElementById('alladvs-chart-title').textContent='Monthly '+CA_LABELS[metric]+' — All Advertisers (Combined)';
+    document.getElementById('alladvs-chart-wrap').style.display='block';
+    document.getElementById('abc2-table-section').style.display='none';
+    updateCombAdv();
+  }
 }
 
 function initCombAdv(){
@@ -65,6 +74,7 @@ function initCombAdv(){
 }
 
 function updateCombAdv(){
+  if(combAdvMetric==='abc2'){buildABC2Table();return;}
   if(!combAdvChart)return;
   const src=CA_DATA[combAdvMetric];
   const advDs=ALL_CA_ADVS.filter(a=>activeCA.has(a)).map((adv,i)=>{
@@ -78,25 +88,25 @@ function updateCombAdv(){
 }
 
 
-// ── ABC2 FUNNEL TABLE ──
-let abc2Visible=false;
-function toggleABC2(){
-  abc2Visible=!abc2Visible;
-  document.getElementById('abc2-section').style.display=abc2Visible?'block':'none';
-  document.getElementById('abc2-toggle').classList.toggle('active',abc2Visible);
-  if(abc2Visible&&!document.getElementById('abc2-tbody').innerHTML)buildABC2Table();
-}
+// ── ABC2 FUNNEL TABLE (per-advertiser, respects chip toggles) ──
 function buildABC2Table(){
-  const months=MONTHS;
+  const sel=Array.from(activeCA);
   let total_eng=0,total_clk=0,total_vv=0;
-  const rows=months.map((m,i)=>{
-    const eng=ABC2_ENGAGE[i]||0;
-    const clk=CA_TOT_CLK[i]||0;
-    const vv=CA_TOT_VV[i]||0;
+  const rows=MONTHS.map((m,i)=>{
+    const eng=sel.reduce((s,a)=>(M_ENG[a]?s+(M_ENG[a][i]||0):s),0);
+    const clk=sel.reduce((s,a)=>(CA_CLK[a]?s+(CA_CLK[a][i]||0):s),0);
+    const vv=sel.reduce((s,a)=>(CA_VV[a]?s+(CA_VV[a][i]||0):s),0);
     total_eng+=eng; total_clk+=clk; total_vv+=vv;
-    return '<tr><td>'+m+'</td><td class="num">'+eng.toLocaleString()+'</td><td class="num">'+Math.round(clk).toLocaleString()+'</td><td class="num">'+Math.round(vv).toLocaleString()+'</td></tr>';
+    return '<tr><td style="padding:7px 12px;border-bottom:1px solid var(--border)">'+m+'</td>'
+      +'<td class="num" style="padding:7px 12px;border-bottom:1px solid var(--border);text-align:right">'+Math.round(eng).toLocaleString()+'</td>'
+      +'<td class="num" style="padding:7px 12px;border-bottom:1px solid var(--border);text-align:right">'+Math.round(clk).toLocaleString()+'</td>'
+      +'<td class="num" style="padding:7px 12px;border-bottom:1px solid var(--border);text-align:right">'+Math.round(vv).toLocaleString()+'</td></tr>';
   });
-  rows.push('<tr style="font-weight:700;border-top:2px solid var(--border2)"><td>Total</td><td class="num">'+Math.round(total_eng).toLocaleString()+'</td><td class="num">'+Math.round(total_clk).toLocaleString()+'</td><td class="num">'+Math.round(total_vv).toLocaleString()+'</td></tr>');
+  rows.push('<tr style="font-weight:700;border-top:2px solid var(--border2)">'
+    +'<td style="padding:8px 12px">Total</td>'
+    +'<td class="num" style="padding:8px 12px;text-align:right">'+Math.round(total_eng).toLocaleString()+'</td>'
+    +'<td class="num" style="padding:8px 12px;text-align:right">'+Math.round(total_clk).toLocaleString()+'</td>'
+    +'<td class="num" style="padding:8px 12px;text-align:right">'+Math.round(total_vv).toLocaleString()+'</td></tr>');
   document.getElementById('abc2-tbody').innerHTML=rows.join('');
 }
 
@@ -267,6 +277,7 @@ const M_IMP={"Toyworld NZ": [0, 0, 0, 371879, 545782, 775240, 1215984, 994296, 8
 const M_CLK={"Toyworld NZ": [0, 0, 0, 6664, 15310, 23894, 46289, 45071, 32404, 23513, 45564, 25940, 25567, 40912, 25856, 25514, 30853, 46595, 50183, 68902, 24672, 45464], "Power Farming NZ": [0, 0, 0, 2271, 3085, 4371, 3776, 4339, 3472, 2154, 5821, 3684, 3363, 4685, 7679, 4688, 1337, 2378, 3652, 6278, 33764, 34613], "JCB NZ": [0, 0, 0, 82, 286, 371, 590, 2723, 0, 853, 900, 0, 63, 285, 554, 161, 297, 0, 0, 0, 1092, 958], "Mad Butcher": [0, 0, 0, 8954, 19591, 18357, 19537, 25442, 26193, 22585, 23116, 23258, 21149, 29143, 23658, 24930, 21029, 19440, 19699, 27759, 24820, 21827], "Impact Outdoors (Direct)": [0, 0, 0, 783, 2540, 3175, 2275, 2706, 6253, 3598, 4922, 3955, 3257, 6367, 7804, 5870, 4285, 3404, 1040, 1489, 1348, 1859], "Pharmabroker": [0, 0, 0, 0, 0, 5475, 8722, 6165, 8718, 6017, 6718, 5424, 3171, 1593, 279, 0, 4007, 3764, 3216, 3358, 4161, 576], "Ideology": [0, 0, 0, 0, 0, 0, 0, 61, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 163, 0, 0], "Pharmabroker (Direct)": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1279, 1732, 11, 0, 0, 0, 0, 0, 0, 0], "Manukau Autos": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 105, 3210, 4976, 3769, 4883, 5074, 4372, 4902, 5048, 5263], "Chicking NZ": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4378, 13124, 10548, 24711, 22157, 16243, 21210, 27744, 31440], "Goodair (Direct)": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 312, 2892, 6508, 805, 0, 289, 1117, 401, 124], "100% Home": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2398, 7085, 7371, 9775, 7346, 7076, 5955, 2220], "NZ Eggs": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4371, 2867, 0, 10265, 0, 24198, 30729, 25982], "Farrimond | Cookie Pie": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13413, 0, 0, 0, 0, 0, 0], "Goodair": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 795, 2528, 1744, 11002, 6354, 4283, 2216], "Impact Outdoors": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1972, 3343, 5231, 6058, 8863], "Travel South USA": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 868, 3587, 811], "Power Farming AUS": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2060, 1982], "Auckland Rugby": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 174]};
 const M_CONV={"Toyworld NZ": [0.0, 0.0, 0.0, 208.0, 240.0, 731.0, 3747.0, 2021.0, 254.0, 447.0, 1040.0, 860.0, 621.0, 816.0, 675.0, 731.0, 1287.0, 1966.0, 2434.0, 3283.0, 511.0, 834.0], "Power Farming NZ": [0.0, 0.0, 0.0, 0.0, 2.0, 1.0, 4.0, 0.0, 0.0, 0.0, 0.0, 3.0, 12.0, 0.0, 0.0, 0.0, 34.0, 44.0, 86.0, 88.0, 176.0, 294.0], "JCB NZ": [0.0, 0.0, 0.0, 0.0, 15.0, 12.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 12.0, 8.0], "Mad Butcher": [0.0, 0.0, 0.0, 613.0, 1574.0, 1133.0, 1138.0, 1514.0, 1774.0, 1482.0, 1483.0, 1319.0, 1614.0, 2353.0, 2041.0, 3727.0, 5430.0, 5632.0, 5577.0, 5386.0, 4950.0, 4163.0], "Impact Outdoors (Direct)": [0.0, 0.0, 0.0, 25.0, 92.0, 153.0, 87.0, 94.0, 153.0, 105.0, 111.0, 113.0, 103.0, 96.0, 144.0, 113.0, 98.0, 133.0, 83.0, 69.0, 78.0, 96.0], "Pharmabroker": [0.0, 0.0, 0.0, 0.0, 0.0, 33.0, 64.0, 23.0, 26.0, 33.0, 86.0, 166.0, 111.0, 69.0, 64.0, 0.0, 28.0, 34.0, 18.0, 4.0, 10.0, 0.0], "Ideology": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "Pharmabroker (Direct)": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 112.0, 564.0, 14.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "Manukau Autos": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 6.0, 15.0, 11.0, 38.0, 51.0, 108.0, 81.0, 91.0], "Chicking NZ": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 810.0, 1945.0, 1793.0, 1668.0, 1632.0, 1440.0, 1656.0, 2205.0, 2162.0], "Goodair (Direct)": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 54.0, 174.0, 62.0, 1.0, 0.0, 4.0, 303.0, 73.0, 35.0], "100% Home": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 7.0, 5.0, 6.0, 7.0, 17.0, 18.0, 9.0, 0.0], "NZ Eggs": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 13252.0, 0.0, 0.0, 0.0, 0.0], "Farrimond | Cookie Pie": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "Goodair": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 24.0, 110.0, 68.0, 93.0, 62.0, 52.0, 19.0], "Impact Outdoors": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 104.0, 261.0, 299.0, 279.0, 326.0], "Travel South USA": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 178.0, 710.0, 186.0], "Power Farming AUS": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 8.0, 4.0], "Auckland Rugby": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 36.0]};
 const M_VV={"Toyworld NZ": [0, 0, 0, 711, 1154, 221, 3, 6, 14, 621, 57, 97, 1615, 10375, 797, 3697, 48430, 72384, 5512, 1564, 12, 3062], "Power Farming NZ": [0, 0, 0, 2058, 12157, 29086, 10554, 21238, 13430, 8358, 34541, 37665, 30604, 48486, 40122, 14305, 0, 1459, 3246, 12003, 46039, 34371], "JCB NZ": [0, 0, 0, 0, 0, 0, 1, 2785, 0, 2304, 1991, 0, 0, 10816, 2318, 1316, 3, 0, 0, 0, 4223, 5037], "Mad Butcher": [0, 0, 0, 5580, 1126, 3892, 5021, 23744, 12496, 0, 0, 0, 0, 0, 0, 12023, 21505, 15982, 16138, 22119, 23771, 34625], "Impact Outdoors (Direct)": [0, 0, 0, 0, 2, 3, 975, 614, 2200, 1756, 3008, 1273, 355, 3282, 3815, 4293, 2496, 1372, 670, 632, 212, 392], "Pharmabroker": [0, 0, 0, 0, 0, 3962, 9129, 6060, 6804, 4235, 15488, 10742, 13510, 10596, 9777, 0, 4471, 7834, 3491, 6750, 12008, 1297], "Ideology": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "Pharmabroker (Direct)": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9031, 14731, 207, 0, 0, 0, 0, 0, 0, 0], "Manukau Autos": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 964, 861, 1807, 2861, 724, 953, 996, 1690, 1361], "Chicking NZ": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9015, 38526, 11837, 37648, 25391, 19636, 29549, 17156, 14237], "Goodair (Direct)": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1834, 6012, 16847, 1788, 0, 1766, 6873, 3399, 0], "100% Home": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3451, 2197, 346, 274, 2057, 2180, 417], "NZ Eggs": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13097, 0, 63365, 39099, 29189], "Farrimond | Cookie Pie": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10241, 0, 0, 0, 0, 0, 0], "Goodair": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1111, 3895, 6175, 21839, 38538, 23754, 13123], "Impact Outdoors": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 288, 347, 823, 480, 3601], "Travel South USA": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "Power Farming AUS": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10079, 11198], "Auckland Rugby": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 481]};
+const M_ENG={"Toyworld NZ": [0, 0, 0, 8181, 22003, 25073, 47007, 45580, 33634, 25998, 46380, 26896, 30447, 87809, 30138, 40343, 72526, 109967, 57428, 77026, 25700, 53455], "Power Farming NZ": [0, 0, 0, 43061, 86915, 61318, 49265, 74163, 55601, 247736, 236061, 159506, 53383, 98822, 147547, 33946, 1470, 6700, 13613, 33301, 121549, 99728], "JCB NZ": [0, 0, 0, 86, 326, 398, 595, 14909, 0, 21060, 16740, 0, 64, 21540, 17364, 14861, 333, 0, 0, 0, 17212, 11660], "Mad Butcher": [0, 0, 0, 29519, 23762, 29536, 37237, 155005, 102331, 24043, 24722, 24548, 22898, 31338, 25593, 55823, 89546, 78699, 73849, 92299, 101773, 121499], "Impact Outdoors": [0, 0, 0, 832, 2831, 3864, 7448, 4636, 12791, 8039, 13975, 8304, 4753, 26705, 25411, 26650, 16395, 13257, 11378, 17283, 14587, 44873], "Pharmabroker": [0, 0, 0, 0, 0, 17764, 39186, 29490, 30605, 38708, 133045, 78786, 99758, 120598, 38925, 0, 54844, 57686, 45445, 110844, 168403, 24925], "Ideology": [0, 0, 0, 0, 0, 0, 0, 133, 0, 0, 0, 42, 0, 0, 0, 0, 0, 0, 0, 185, 0, 0], "Manukau Autos": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 111, 5960, 6731, 8472, 17217, 13923, 21606, 24825, 30837, 23815], "Chicking NZ": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 43289, 231200, 175391, 305141, 206763, 195436, 270938, 302325, 160927], "Goodair": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5756, 33341, 75651, 26162, 17726, 141507, 243691, 154094, 78551], "100% Home": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2522, 37197, 26887, 11349, 8901, 17671, 16312, 3237], "NZ Eggs": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4890, 3057, 0, 29737, 0, 115930, 85214, 67347], "Cookie Pie": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 84431, 0, 0, 0, 0, 0, 0], "Travel South USA": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1061, 4270, 971], "Power Farming Group AUS": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24998, 26115], "Auckland Rugby": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2402]};
 const M_TOT_SPEND=[0.0, 0.0, 0.0, 14420.32, 30143.2, 41916.49, 48202.08, 38669.04, 43401.94, 40428.45, 58696.84, 43951.17, 41655.57, 58506.36, 67392.84, 66762.13, 66792.44, 67706.54, 72591.83, 82909.45, 79302.74, 77062.15];
 const M_TOT_IMP=[0.0, 0.0, 0.0, 2847925.0, 5869355.0, 6846943.0, 7016165.0, 6262579.0, 8431618.0, 8676938.0, 11288408.0, 9543070.0, 7743244.0, 10002834.0, 13009361.0, 11702705.0, 12819829.0, 11260161.0, 9877901.0, 12735564.0, 15065272.0, 10605658.0];
 const M_TOT_CLK=[0.0, 0.0, 0.0, 18754.0, 40812.0, 55643.0, 81189.0, 86507.0, 77040.0, 58720.0, 87041.0, 62261.0, 57954.0, 92617.0, 93602.0, 106148.0, 102106.0, 126568.0, 120385.0, 178905.0, 175722.0, 184372.0];
@@ -879,25 +890,25 @@ function updateCombAdv(){
 }
 
 
-// ── ABC2 FUNNEL TABLE ──
-let abc2Visible=false;
-function toggleABC2(){
-  abc2Visible=!abc2Visible;
-  document.getElementById('abc2-section').style.display=abc2Visible?'block':'none';
-  document.getElementById('abc2-toggle').classList.toggle('active',abc2Visible);
-  if(abc2Visible&&!document.getElementById('abc2-tbody').innerHTML)buildABC2Table();
-}
+// ── ABC2 FUNNEL TABLE (per-advertiser, respects chip toggles) ──
 function buildABC2Table(){
-  const months=MONTHS;
+  const sel=Array.from(activeCA);
   let total_eng=0,total_clk=0,total_vv=0;
-  const rows=months.map((m,i)=>{
-    const eng=ABC2_ENGAGE[i]||0;
-    const clk=CA_TOT_CLK[i]||0;
-    const vv=CA_TOT_VV[i]||0;
+  const rows=MONTHS.map((m,i)=>{
+    const eng=sel.reduce((s,a)=>(M_ENG[a]?s+(M_ENG[a][i]||0):s),0);
+    const clk=sel.reduce((s,a)=>(CA_CLK[a]?s+(CA_CLK[a][i]||0):s),0);
+    const vv=sel.reduce((s,a)=>(CA_VV[a]?s+(CA_VV[a][i]||0):s),0);
     total_eng+=eng; total_clk+=clk; total_vv+=vv;
-    return '<tr><td>'+m+'</td><td class="num">'+eng.toLocaleString()+'</td><td class="num">'+Math.round(clk).toLocaleString()+'</td><td class="num">'+Math.round(vv).toLocaleString()+'</td></tr>';
+    return '<tr><td style="padding:7px 12px;border-bottom:1px solid var(--border)">'+m+'</td>'
+      +'<td class="num" style="padding:7px 12px;border-bottom:1px solid var(--border);text-align:right">'+Math.round(eng).toLocaleString()+'</td>'
+      +'<td class="num" style="padding:7px 12px;border-bottom:1px solid var(--border);text-align:right">'+Math.round(clk).toLocaleString()+'</td>'
+      +'<td class="num" style="padding:7px 12px;border-bottom:1px solid var(--border);text-align:right">'+Math.round(vv).toLocaleString()+'</td></tr>';
   });
-  rows.push('<tr style="font-weight:700;border-top:2px solid var(--border2)"><td>Total</td><td class="num">'+Math.round(total_eng).toLocaleString()+'</td><td class="num">'+Math.round(total_clk).toLocaleString()+'</td><td class="num">'+Math.round(total_vv).toLocaleString()+'</td></tr>');
+  rows.push('<tr style="font-weight:700;border-top:2px solid var(--border2)">'
+    +'<td style="padding:8px 12px">Total</td>'
+    +'<td class="num" style="padding:8px 12px;text-align:right">'+Math.round(total_eng).toLocaleString()+'</td>'
+    +'<td class="num" style="padding:8px 12px;text-align:right">'+Math.round(total_clk).toLocaleString()+'</td>'
+    +'<td class="num" style="padding:8px 12px;text-align:right">'+Math.round(total_vv).toLocaleString()+'</td></tr>');
   document.getElementById('abc2-tbody').innerHTML=rows.join('');
 }
 
@@ -1002,7 +1013,6 @@ function buildABC2Table(){
   <div class="section">
     <div class="kpi-row" id="alladvs-kpis"></div>
   </div>
-  <div class="section" style="padding-bottom:8px"><button class="abc2-btn" id="abc2-toggle" onclick="toggleABC2()">📋 ABC2 Funnel</button></div>
   <div class="section">
     <div class="sub-tabs">
       <div class="sub-tab active" onclick="setCombAdvMetric('spend',this)">Spend</div>
@@ -1010,23 +1020,23 @@ function buildABC2Table(){
       <div class="sub-tab" onclick="setCombAdvMetric('clk',this)">Clicks</div>
       <div class="sub-tab" onclick="setCombAdvMetric('conv',this)">Conversions</div>
       <div class="sub-tab" onclick="setCombAdvMetric('vv',this)">Video Views</div>
+      <div class="sub-tab" onclick="setCombAdvMetric('abc2',this)">ABC2 Funnel</div>
     </div>
     <div class="chart-title" id="alladvs-chart-title">Monthly Spend — All Advertisers (Combined)</div>
     <div class="trend-controls" id="alladvs-chips"></div>
-    <div class="chart-wrap"><canvas id="chart-alladvs"></canvas></div>
-  </div>
-  <div class="section" id="abc2-section" style="display:none">
-    <div class="chart-title" style="margin-bottom:16px">ABC2 Funnel — Monthly Summary</div>
-    <div class="table-wrap">
-      <table id="abc2-table" style="width:100%;border-collapse:collapse">
-        <thead><tr>
-          <th style="text-align:left;padding:8px 12px;border-bottom:1px solid var(--border2);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Month</th>
-          <th style="text-align:right;padding:8px 12px;border-bottom:1px solid var(--border2);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Social Engagements</th>
-          <th style="text-align:right;padding:8px 12px;border-bottom:1px solid var(--border2);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Clicks</th>
-          <th style="text-align:right;padding:8px 12px;border-bottom:1px solid var(--border2);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Video Views</th>
-        </tr></thead>
-        <tbody id="abc2-tbody"></tbody>
-      </table>
+    <div class="chart-wrap" id="alladvs-chart-wrap"><canvas id="chart-alladvs"></canvas></div>
+    <div id="abc2-table-section" style="display:none">
+      <div class="table-wrap" style="margin-top:16px">
+        <table id="abc2-table" style="width:100%;border-collapse:collapse">
+          <thead><tr>
+            <th style="text-align:left;padding:8px 12px;border-bottom:1px solid var(--border2);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Month</th>
+            <th style="text-align:right;padding:8px 12px;border-bottom:1px solid var(--border2);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Social Engagements</th>
+            <th style="text-align:right;padding:8px 12px;border-bottom:1px solid var(--border2);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Clicks</th>
+            <th style="text-align:right;padding:8px 12px;border-bottom:1px solid var(--border2);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Video Views</th>
+          </tr></thead>
+          <tbody id="abc2-tbody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
