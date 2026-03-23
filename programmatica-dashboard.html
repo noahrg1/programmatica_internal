@@ -1068,36 +1068,40 @@ function updateTrackerTable(){
   const gaugeEl=document.getElementById('trk-gauges');
   gaugeEl.innerHTML='';
   const gaugeMetrics=[
-    {key:'spend',label:'Media Spend',isCost:true},
-    {key:'imp',label:'Impressions',isCost:false},
-    {key:'clk',label:'Clicks',isCost:false},
-    {key:'vv',label:'Video Views',isCost:false},
-    {key:'cpm',label:'CPM',isCost:true},
-    {key:'cpc',label:'CPC',isCost:true}
+    {key:'spend',label:'Media Spend',lowerIsBetter:true},
+    {key:'imp',label:'Impressions',lowerIsBetter:false},
+    {key:'clk',label:'Clicks',lowerIsBetter:false},
+    {key:'vv',label:'Video Views',lowerIsBetter:false},
+    {key:'cpm',label:'CPM',lowerIsBetter:true},
+    {key:'cpc',label:'CPC',lowerIsBetter:true}
   ];
   const actMap={spend:a.total.sp,imp:a.total.im,clk:a.total.cl,vv:a.total.vv,cpm:a.total.cpm,cpc:a.total.cpc};
   gaugeMetrics.forEach(gm=>{
     const pct=trkPct(actMap[gm.key],est[gm.key]);
     const wrap=document.createElement('div');
-    wrap.style.cssText='display:flex;flex-direction:column;align-items:center;min-width:140px';
+    wrap.style.cssText='display:flex;flex-direction:column;align-items:center;min-width:140px;gap:6px';
     const canvas=document.createElement('canvas');
-    canvas.width=200; canvas.height=150;
+    canvas.width=200; canvas.height=130;
+    const lbl=document.createElement('div');
+    lbl.textContent=gm.label;
+    lbl.style.cssText='font-size:11px;font-weight:600;color:#94a3b8;letter-spacing:.04em;text-align:center';
     wrap.appendChild(canvas);
+    wrap.appendChild(lbl);
     gaugeEl.appendChild(wrap);
-    drawSpeedoGauge(canvas,pct,gm.label,gm.isCost);
+    drawSpeedoGauge(canvas,pct,gm.lowerIsBetter);
   });
 }
 
-function drawSpeedoGauge(canvas,pct,label,isCost){
+function drawSpeedoGauge(canvas,pct,lowerIsBetter){
   // Hi-res canvas for retina displays
   const dpr=window.devicePixelRatio||1;
-  const CW=200, CH=150;
+  const CW=200, CH=130;
   canvas.style.width=CW+'px'; canvas.style.height=CH+'px';
   canvas.width=CW*dpr; canvas.height=CH*dpr;
   const ctx=canvas.getContext('2d');
   ctx.scale(dpr,dpr);
 
-  const cx=CW/2, cy=CH*0.74, r=68;
+  const cx=CW/2, cy=CH*0.82, r=68;
 
   const drawArc=(from,to,color,lw)=>{
     const sa=Math.PI*(1+from/200), ea=Math.PI*(1+to/200);
@@ -1108,10 +1112,16 @@ function drawSpeedoGauge(canvas,pct,label,isCost){
 
   // Track background
   drawArc(0,200,'#1a2d3e',18);
-  // Color zones
-  drawArc(0,50,'#ef4444');
-  drawArc(50,100,'#f97316');
-  drawArc(100,200,'#22c55e');
+  // Color zones — flipped for lowerIsBetter metrics
+  if(lowerIsBetter){
+    drawArc(0,100,'#22c55e');    // green: under estimate = good
+    drawArc(100,150,'#f97316'); // orange: slightly over
+    drawArc(150,200,'#ef4444'); // red: well over
+  } else {
+    drawArc(0,50,'#ef4444');    // red: well under
+    drawArc(50,100,'#f97316'); // orange: approaching
+    drawArc(100,200,'#22c55e'); // green: at or over
+  }
 
   // Tick marks at 0%, 50%, 100%, 150%, 200%
   [0,50,100,150,200].forEach(t=>{
@@ -1126,7 +1136,7 @@ function drawSpeedoGauge(canvas,pct,label,isCost){
   ctx.fillStyle='#4a6070'; ctx.font='10px DM Mono,monospace'; ctx.textAlign='center';
   ctx.fillText('0%',   cx-r*1.15, cy+5);
   ctx.fillText('200%', cx+r*1.16, cy+5);
-  ctx.fillText('100%', cx,        cy-r-12);
+  ctx.fillText('100%', cx,        cy-r-6);
 
   if(pct!==null){
     const clamp=Math.min(Math.max(pct,0),200);
@@ -1151,18 +1161,19 @@ function drawSpeedoGauge(canvas,pct,label,isCost){
     ctx.beginPath(); ctx.arc(cx,cy,3,0,2*Math.PI);
     ctx.fillStyle='#0f1923'; ctx.fill();
 
-    // Pct text
-    const textColor=pct>=100?(isCost?'#f87171':'#4ade80'):(pct>=80?'#fb923c':'#f87171');
+    // Pct text colour matches zone
+    let textColor;
+    if(lowerIsBetter){
+      textColor=pct<=100?'#4ade80':(pct<=150?'#fb923c':'#f87171');
+    } else {
+      textColor=pct>=100?'#4ade80':(pct>=50?'#fb923c':'#f87171');
+    }
     ctx.fillStyle=textColor; ctx.font='bold 18px DM Sans,sans-serif'; ctx.textAlign='center';
-    ctx.fillText(Math.round(pct)+'%', cx, cy+22);
+    ctx.fillText(Math.round(pct)+'%', cx, cy+20);
   } else {
     ctx.fillStyle='#4a6070'; ctx.font='11px DM Sans,sans-serif'; ctx.textAlign='center';
-    ctx.fillText('Enter estimate', cx, cy+20);
+    ctx.fillText('Enter estimate', cx, cy+18);
   }
-
-  // Label above arc
-  ctx.fillStyle='#94a3b8'; ctx.font='600 11px DM Sans,sans-serif'; ctx.textAlign='center';
-  ctx.fillText(label, cx, cy-r+14);
 }
 
 function initTracker(){
