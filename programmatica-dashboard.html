@@ -315,7 +315,7 @@ async function loadAll() {
   M_TOT_SPEND = sumMap(M_SPEND);  M_TOT_IMP = sumMap(M_IMP);  M_TOT_CLK = sumMap(M_CLK);  M_TOT_CONV = sumMap(M_CONV);  M_TOT_VV = sumMap(M_VV);
   CA_TOT_SPEND= sumMap(CA_SPEND); CA_TOT_IMP= sumMap(CA_IMP); CA_TOT_CLK= sumMap(CA_CLK); CA_TOT_CONV= sumMap(CA_CONV); CA_TOT_VV= sumMap(CA_VV);
 
-  // MONTHLY_* = DV360-only per-advertiser data (used by the DV360 Trends / Revenue tabs)
+  // MONTHLY_* = DV360-only per-advertiser data (DV360 Trends / Revenue tabs)
   MONTHLY_CONV = byPlatMetric("dv360","conversions");
   MONTHLY_IMP  = byPlatMetric("dv360","impressions");
   MONTHLY_CLK  = byPlatMetric("dv360","clicks");
@@ -407,7 +407,6 @@ function showTab(id){
 // OV_COMBINED computed in loader
 
 
-try {
 // ── OVERVIEW ──
 const clean=MEDIA.filter(m=>m.spend>0||m.impressions>0);
 const ov_dv_sp=sum(clean.map(m=>m.spend)),ov_dv_im=sum(clean.map(m=>m.impressions)),ov_dv_cl=sum(clean.map(m=>m.clicks)),ov_dv_cv=sum(clean.map(m=>m.conversions)),ov_dv_vv=sum(clean.map(m=>m.video_views));
@@ -431,8 +430,6 @@ new Chart(document.getElementById('chart-ctr'),{type:'bar',data:{labels:ctrD.map
 const scD=OV_COMBINED.filter(m=>m.impressions>0&&m.spend>0);
 new Chart(document.getElementById('chart-scatter'),{type:'scatter',data:{datasets:[{data:scD.map(m=>({x:Math.round(m.impressions/1000),y:Math.round(m.spend),label:m.advertiser})),backgroundColor:'rgba(34,201,122,.6)',pointRadius:6,pointHoverRadius:8}]},options:{...CD,plugins:{...CD.plugins,tooltip:{...CD.plugins.tooltip,callbacks:{label:c=>c.raw.label+': '+fmt(c.raw.x*1000)+' imps / $'+c.raw.y.toLocaleString()}}},scales:{x:{...CD.scales.x,title:{display:true,text:'Impressions',color:'#4A6070',font:{size:11}},ticks:{...CD.scales.x.ticks,callback:v=>fmt(v*1000)}},y:{...CD.scales.y,title:{display:true,text:'Spend (NZD)',color:'#4A6070',font:{size:11}},ticks:{...CD.scales.y.ticks,callback:v=>fmtD(v)}}}}});
 
-} catch(__e) { console.error("Section error:", __e); }
-try {
 // ── MONTHLY TRENDS (with sub-tabs) ──
 let trendChart=null, trendMetric='conv', showTrendTotal=true;
 const activeA=new Set();
@@ -497,8 +494,6 @@ function updateTrend(){
   trendChart.update();
 }
 
-} catch(__e) { console.error("Section error:", __e); }
-try {
 // ── REVENUE ──
 let revChart=null,showTotal=true;
 const activeRev=new Set();
@@ -548,8 +543,6 @@ function updateRevChart(){
   revChart.update();
 }
 
-} catch(__e) { console.error("Section error:", __e); }
-try {
 // ── DEEP DIVE ──
 let deepInit=false,actsChart=null,deepTrend=null;
 function initDeepDive(){
@@ -577,8 +570,6 @@ function renderDeepDive(){
   deepTrend=new Chart(document.getElementById('chart-deep-trend'),{type:'line',data:{labels:MONTHS,datasets:[{data:tr,borderColor:'#FF6B35',backgroundColor:'rgba(255,107,53,.1)',borderWidth:2,pointRadius:4,tension:0.3,fill:true}]},options:{...CD,scales:{x:{...CD.scales.x},y:{...CD.scales.y,ticks:{...CD.scales.y.ticks,callback:v=>fmt(v)}}}}});
 }
 
-} catch(__e) { console.error("Section error:", __e); }
-try {
 // ── TABLE ──
 let tableBuilt=false,sortCol=1,sortDir=-1;
 function buildTable(){
@@ -625,8 +616,6 @@ function renderTable(){
   }).join('');
 }
 
-} catch(__e) { console.error("Section error:", __e); }
-try {
 // ── GOOGLE ADS ──
 let googleChart=null,googleMetric='spend',showGoogleTotal=true;
 const activeG=new Set();
@@ -715,8 +704,6 @@ function buildGoogleTable(){
   }).join('');
 }
 
-} catch(__e) { console.error("Section error:", __e); }
-try {
 // ── META ADS ──
 let metaChart=null,metaMetric='spend',showMetaTotal=true;
 const activeM=new Set();
@@ -804,8 +791,6 @@ function buildMetaTable(){
   }).join('');
 }
 
-} catch(__e) { console.error("Section error:", __e); }
-try {
 // ── CROSS-PLATFORM ──
 let combinedChart=null,combinedMetric='spend',showCombinedTotal=true;
 const activePlatforms=new Set(['dv360','google','meta']);
@@ -888,8 +873,6 @@ function buildCombinedBreakdown(){
 }
 
 
-} catch(__e) { console.error("Section error:", __e); }
-try {
 // ── ALL ADVERTISERS (COMBINED) ──
 let combAdvChart=null,combAdvMetric='spend',showCombAdvTotal=true;
 const activeCA=new Set();
@@ -970,8 +953,6 @@ function updateCombAdv(){
 }
 
 
-} catch(__e) { console.error("Section error:", __e); }
-try {
 // ── ABC2 FUNNEL TABLE (respects Total Portfolio toggle + chip selection) ──
 function buildABC2Table(){
   const sel=Array.from(activeCA);
@@ -1002,8 +983,6 @@ function buildABC2Table(){
 }
 
 // ════════════════════════════════════════════════════════
-} catch(__e) { console.error("Section error:", __e); }
-try {
 // ── CAMPAIGN TRACKER ────────────────────────────────────
 // ════════════════════════════════════════════════════════
 let trackerInited=false;
@@ -1277,7 +1256,6 @@ function initTracker(){
 
 showTab('overview');
 
-} catch(__e) { console.error("Section error:", __e); }
   if (typeof showTab === "function") window.showTab = showTab;
   if (typeof setTrendMetric === "function") window.setTrendMetric = setTrendMetric;
   if (typeof setGoogleMetric === "function") window.setGoogleMetric = setGoogleMetric;
