@@ -383,6 +383,7 @@ function showLoadError(err) {
 
 function renderAll() {
 const ACTIVITIES={"100%": [["Remarketing", 242320], ["Brand | Haier", 10998], ["Brand | beko", 6701], ["Brand | Panasonic", 5524], ["Brand | Samsung", 5316], ["Brand | Bosch", 4922], ["Brand | LG", 3349], ["Subcribe Form Submit", 2696], ["Brand | Mitsubishi", 2393], ["Brand | Westinghouse", 2163]], "ABC Business Sales": [["CONV | Form-Fill Submit (All Pages)", 8893], ["CONV | Sell A Business", 5639], ["CONV | Sell Your Business Click", 645], ["CONV | Call 0800 180 222", 478], ["CONV | Enquire Now", 413], ["CONV | Find A Broker", 215], ["CONV | Form-Fill Submit (Find Agent / Staff)", 150], ["CONV | Search Parameter | $500K - $1M", 110], ["CONV | Mailto (ABC Reception)", 102], ["CONV | Form-Fill Submit (Contact)", 73]], "Auckland Rugby": [["Junior Rugby", 37], ["Community Click", 10], ["Find My Club", 1]], "Chicking NZ": [["Site Visit", 30041], ["Order 2 | Enter Address, Pickup/Delivery & Continue", 7117], ["Coupons", 6829], ["Order 1 | Start Order", 3899], ["Order 3 | Go To Checkout", 2163], ["Order 4 | Payment Gateway", 1807], ["Offers", 1732], ["Stores Locator", 1279], ["Get Directions", 344], ["Order 5 | Thank You Order Complete", 8]], "Goodair": [["Page - Buy Nosebuds", 3162], ["Page - How They Work", 838], ["Add to Cart", 685], ["Page - The Science", 403], ["Buy with ShopPay", 157], ["Page - Our Story", 151], ["Page - Contact Us", 91], ["Email Offer Form - Filled and Continue", 75], ["View Cart", 64], ["Contact Us - Send Message", 23]], "JAC": [["Find a dealer", 460], ["Parts and Accessories", 453], ["Finance", 237], ["EV Truck", 224], ["Contact US", 142], ["Diesel Truck", 33], ["Click To Call", 13], ["Email - Mailto", 11]], "Mad Butcher": [["Mailing List Submit", 85504], ["Add to Cart", 29993], ["Filter - Weekly Specials", 18289], ["Checkout", 7114], ["Place Order (Checkout + Scroll)", 5204], ["Purchase", 2940], ["Filter - Pet Food", 1158], ["Delivery Information", 750], ["Visit Store", 542], ["Click Contact Us", 211]], "Manukau Autos | Mitsubishi": [["Link Click | Triton", 182], ["Link Click | Outlander", 151], ["Link Click | ASX", 115], ["Link Click | Eclipse Cross", 111], ["Brochure | Triton", 104], ["Brochure | Outlander", 59], ["Banner Click | Finance Offer", 55], ["Link Click | Pajero Sport", 55], ["Button Click | Learn More | Triton Beasts", 53], ["Link Click | Outlander PHEV", 52]], "NZ Eggs": [["Site Visit", 133498], ["Recipes", 73058], ["Recipe eBook", 287]], "New Caledonia Tourism": [["Accom View", 386], ["Plan Your Trip", 231], ["Best Deals", 128], ["Newsletter Register", 66], ["Telephone Click To Call", 38], ["Accom Book Online", 16], ["Contact Form Submit", 7], ["Brochure", 3], ["Brochure Download", 3], ["Landing Contact Us", 3]], "Original Foods | Cookie Pie": [["Page View", 5318], ["Where To Buy", 118], ["Shop", 92], ["Contact", 21], ["Cookie Pie Stockists", 19]], "Pharmabroker NZ": [["Levrix Website Visitors FL", 16451], ["Buccaline - Remarketing", 15150], ["TraveEase Website Visitors FL", 6712], ["Rescue | Website Visitors", 4312], ["Keto - Home Page Visitors FL", 3312], ["Optifix Remarketing", 3053], ["Optifix - Long Session", 2360], ["Buccaline - Our Story", 2236], ["Optifix - Eye Scroller", 287], ["Keto - Where to buy FL", 243]], "Power Farming | Deutz": [["Products", 44993], ["Buy Back", 26424], ["DV360 | Floodlight | Website Visitor - AU", 5756], ["DV360 | Dynamic Floodlight - AU", 5720], ["Contact Us", 1551], ["Locate Dealer", 163], ["DV360 | Floodlight | Promotions - AU", 101], ["DV360 | Floodlight | Find A Dealer Page View - AU", 29], ["DV360 | Floodlight | Website Calls - AU", 1]], "Power Farming | JCB": [["Product Clicks", 26409], ["Locate a Dealer", 489], ["Contact Us Page", 236], ["Parts", 180], ["Call from Main Nav", 29], ["Pothole Pro", 3], ["Brochure Download", 1]], "Power Farming | Kioti": [["Products", 28070], ["Site Visit", 6154], ["Lifestyle Range", 2511], ["Brochure Download", 677], ["Contact Us", 567], ["Buy Back", 343], ["Locate Dealer", 273], ["Promotion", 231]], "Power Farming | Kverneland": [["Brochures", 37999], ["Products", 7062], ["Contact", 2940], ["Dealers", 48], ["Company", 28]], "Rexona": [["Rexona | Splash", 16290], ["Rugby Game Start", 717], ["Prize Information", 277], ["Rugby Game Win - Coupon", 249], ["Rugby Game - Play Now Button", 13], ["Entry Form", 12], ["Entry Form Hit", 5], ["Rugby Game - Ball Kick", 4], ["Rugby Game - Better Luck Next Time", 2], ["Thank You - Share", 2]], "South Auckland Ford": [["Promotions", 17038], ["Product | Commercial", 5090], ["Products", 1444], ["Used Vehicle", 401], ["Hybrid and EV", 384], ["Product | SUV", 375], ["Product | Car", 290], ["Book Test Drive", 192], ["Value Vehicle Request", 167], ["Contact Us - Call", 166]], "South Auckland Mazda": [["National Offers", 808], ["Dealer Offers", 732], ["Vehicles", 372], ["Used", 169], ["New", 119], ["Contact Us", 60], ["Download Brochure", 47], ["Servicing, Parts, Accessories, Tyres", 1]], "South Auckland Motors": [["Stock Page View", 12803], ["Click to call", 36], ["Stock - Finance Application Button", 6], ["Contact Us Enquiry", 2]], "Southpac Trucks": [["Brochure Download", 464], ["Email Lead", 183], ["Click To Call", 38], ["Form Fill", 6]], "TRACTA | Case IH": [["Special Offers Page View", 1307], ["Site Visit", 1202], ["Tractors Page View", 239], ["Farmall Series Page View", 62], ["Puma Series Page View", 52], ["Maxxum Series Page View", 38], ["Hay & Forage Page View", 15], ["Harvesting Page View", 5], ["Finance Page", 1]], "TRACTA | Cropmark Seeds": [["Site Visit", 8634], ["Techsheet/Brochure Download", 161], ["Learn More", 120], ["Forage Selector | Submit", 73], ["Where To Buy | Page View", 65], ["Knowledge Hub | Page View", 38], ["HubSpot - Generate Lead", 1]], "TRACTA | Cropmark Seeds AU": [["Site Visit", 4042], ["Custom Variable", 582], ["Learn More | Click", 81], ["Brochure Download", 71], ["Forage Selector | Page View", 69], ["Where to Buy | Page View", 43], ["Knowledge Hub | Page View", 3], ["1800 Phone Click", 1]], "TRACTA | Farmside": [["Farmside site wide", 17018], ["Broadband services", 6084], ["Mobile services | visits", 524], ["Click_phone", 133], ["Latest deals | page view", 44], ["Plan_signup_sub", 29], ["Contact_form_sub", 17], ["Asset tracker | page view", 16]], "TRACTA | Gallagher Animal Management": [["Custom Variable", 13448], ["Find a stockist", 1172], ["Add to cart", 404], ["Checkout", 59], ["View Cart", 33], ["Form Submission", 27], ["PhoneCallClick", 1], ["Purchase Confirmation", 1]], "TRACTA | Incitec Pivot Fertilisers": [["Green Urea | Page View | IPF website", 878], ["Easy Liquids - Page View", 356], ["eNpower - Page View", 319], ["Green Urea - Download Calculator | IPF Website", 95], ["Green Urea - Download Report | IPF Website", 86], ["Green Urea | Find a dealer click | IPF website", 46], ["Pasture - Find IPF Location", 13], ["Pasture - Learn More", 13], ["eNpower - Brochure Download", 6], ["Easy Liquids - Learn More Click", 2]], "TRACTA | Knuckeys Agriculture - AU": [["Custom Variable", 1586], ["Brochure Download", 182], ["Click to Call", 23]], "TRACTA | Nedap": [["Site visit", 21619], ["Site Visit | Ireland Campaign", 6951], ["Custom variable floodlight | Smart Tag AU", 3265], ["Custom Variable Floodlight | SmartSort NZ", 370], ["Site visit Cow Monitoring NZ", 160], ["Site visit Cow Monitoring AU", 84], ["Download brochure", 28], ["YT Video View", 15], ["Contact Page| Form Submission", 6], ["Site visit cow monitoring | WMS", 3]], "TRACTA | New Holland": [["Offers & promotions", 3661], ["Site visit", 3149], ["Tractors \uff06 Telehandlers", 516], ["Find a dealer | Page View", 32], ["Balers and haytools", 29], ["Combine-harvesters", 15], ["Parts", 12], ["Grape harvesters", 5], ["Forage and harvesters", 3], ["Contact Us | Form Submission", 1]], "TRACTA | Precision Farming": [["Page View (All Pages)", 211], ["Form Submission (All forms)", 10], ["Sign Up - Plans Page", 6], ["Contractor Plans - Page View", 4], ["Farmer Plans - Page View", 2], ["Self Applied Plans - Page View", 1]], "TRACTA | Resupply": [["Custom Variable Floodlight", 14719], ["Fertiliser | Page View", 2211], ["Shopping Cart | View", 1406], ["Chemicals | Page View", 664], ["Seeds | Page View", 457], ["Tests | Page View", 259], ["GrowHow | Page View", 225], ["Lifestlyle | Page view", 213]], "TRACTA | Suzuki Marine": [["Site Visit", 24193], ["Outboard Models | Page View", 8464], ["Find a dealer | Button", 1676], ["GOT Calculator Enquiry | Submit", 862], ["Find a dealer page", 484], ["Contact Us | Button", 347], ["Find a dealer | Submission", 180], ["Finance  calculator page", 155], ["Contactform", 80], ["GOT Finance Calculator | Button Click", 77]], "TRACTA | Suzuki Motorcycle": [["Site Visit", 11438], ["Motorcycle Models (All)  Explore | Page View", 2357], ["DR200SE | Page View", 1597], ["GOT Finance Calculator | Submit", 1226], ["Farm ATV | Page View", 540], ["Offers | Page View", 341], ["Youth Bike | Page View", 130], ["Find a dealer", 118], ["Contact Us | Submission", 52], ["Contact Us | Button", 41]], "TRACTA | TUMU Group: TimberSpan": [["Page View Eiffel Tower", 181]], "TRACTA | Zoetis": [["Sheep vaccines", 6778], ["Zoetis Livestock- site visit", 1034], ["Zoetis Livestock Sheep pages", 1031], ["Zoetis Livestock Dairy pages", 496], ["Sheep drench products", 235], ["Dairy Mastitis", 220], ["Dairy Disease prevention pages", 142], ["Sheep Flock performance pages", 39], ["Sheep reproduction products", 12]], "Tourisme Tahiti": [["Tourisme Tahiti | Remarketing", 3160], ["Islands & Archipelagos", 1009], ["Personalised Trips", 842], ["Vacation Packages", 603], ["Accomodations Display Page", 355], ["Activities", 326], ["Local Accomodations", 303], ["Plan My Trip", 303], ["Follow Your Feelings | Win Tickets Giveaway", 261], ["Discover", 121]], "Toyworld NZ": [["Dynamic Variable", 579387], ["Site VIsit", 357204], ["Lego", 68389], ["Add to cart", 41609], ["Purchase", 22351], ["Sales - Purchase", 18876], ["Check Out", 14955], ["Check in-store/Click and collect", 8510], ["Specials", 3856], ["Catalogue", 2429]], "Travel South USA": [["Audience Builder - Site Engagement", 5478], ["Site Visit", 5477], ["Destination Explore | States", 2812], ["Competition View", 254], ["Destination Explore | Cities", 10], ["Competition Entry", 9]], "World Travellers": [["Visit", 9932], ["Our Deals - Page Open", 7748], ["Enquire Now - Form Open", 48], ["Contact Us - Page Open", 37], ["Contact Us - Form Submit", 1], ["Enquire Now - Form Submit", 1]]};
+
 const fmt=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':String(Math.round(n));
 const fmtD=n=>n>=1e6?'$'+(n/1e6).toFixed(2)+'M':'$'+(n/1e3).toFixed(1)+'K';
 const fmtFull=n=>'$'+n.toLocaleString('en-NZ',{minimumFractionDigits:0,maximumFractionDigits:0});
@@ -404,7 +405,6 @@ function showTab(id){
 }
 
 // OV_COMBINED computed in loader
-
 
 
 try {
@@ -431,9 +431,7 @@ new Chart(document.getElementById('chart-ctr'),{type:'bar',data:{labels:ctrD.map
 const scD=OV_COMBINED.filter(m=>m.impressions>0&&m.spend>0);
 new Chart(document.getElementById('chart-scatter'),{type:'scatter',data:{datasets:[{data:scD.map(m=>({x:Math.round(m.impressions/1000),y:Math.round(m.spend),label:m.advertiser})),backgroundColor:'rgba(34,201,122,.6)',pointRadius:6,pointHoverRadius:8}]},options:{...CD,plugins:{...CD.plugins,tooltip:{...CD.plugins.tooltip,callbacks:{label:c=>c.raw.label+': '+fmt(c.raw.x*1000)+' imps / $'+c.raw.y.toLocaleString()}}},scales:{x:{...CD.scales.x,title:{display:true,text:'Impressions',color:'#4A6070',font:{size:11}},ticks:{...CD.scales.x.ticks,callback:v=>fmt(v*1000)}},y:{...CD.scales.y,title:{display:true,text:'Spend (NZD)',color:'#4A6070',font:{size:11}},ticks:{...CD.scales.y.ticks,callback:v=>fmtD(v)}}}}});
 
-
-} catch(__e) { console.error('Dashboard section error:', __e); }
-
+} catch(__e) { console.error("Section error:", __e); }
 try {
 // ── MONTHLY TRENDS (with sub-tabs) ──
 let trendChart=null, trendMetric='conv', showTrendTotal=true;
@@ -499,9 +497,7 @@ function updateTrend(){
   trendChart.update();
 }
 
-
-} catch(__e) { console.error('Dashboard section error:', __e); }
-
+} catch(__e) { console.error("Section error:", __e); }
 try {
 // ── REVENUE ──
 let revChart=null,showTotal=true;
@@ -552,9 +548,7 @@ function updateRevChart(){
   revChart.update();
 }
 
-
-} catch(__e) { console.error('Dashboard section error:', __e); }
-
+} catch(__e) { console.error("Section error:", __e); }
 try {
 // ── DEEP DIVE ──
 let deepInit=false,actsChart=null,deepTrend=null;
@@ -583,9 +577,7 @@ function renderDeepDive(){
   deepTrend=new Chart(document.getElementById('chart-deep-trend'),{type:'line',data:{labels:MONTHS,datasets:[{data:tr,borderColor:'#FF6B35',backgroundColor:'rgba(255,107,53,.1)',borderWidth:2,pointRadius:4,tension:0.3,fill:true}]},options:{...CD,scales:{x:{...CD.scales.x},y:{...CD.scales.y,ticks:{...CD.scales.y.ticks,callback:v=>fmt(v)}}}}});
 }
 
-
-} catch(__e) { console.error('Dashboard section error:', __e); }
-
+} catch(__e) { console.error("Section error:", __e); }
 try {
 // ── TABLE ──
 let tableBuilt=false,sortCol=1,sortDir=-1;
@@ -633,9 +625,7 @@ function renderTable(){
   }).join('');
 }
 
-
-} catch(__e) { console.error('Dashboard section error:', __e); }
-
+} catch(__e) { console.error("Section error:", __e); }
 try {
 // ── GOOGLE ADS ──
 let googleChart=null,googleMetric='spend',showGoogleTotal=true;
@@ -725,9 +715,7 @@ function buildGoogleTable(){
   }).join('');
 }
 
-
-} catch(__e) { console.error('Dashboard section error:', __e); }
-
+} catch(__e) { console.error("Section error:", __e); }
 try {
 // ── META ADS ──
 let metaChart=null,metaMetric='spend',showMetaTotal=true;
@@ -816,9 +804,7 @@ function buildMetaTable(){
   }).join('');
 }
 
-
-} catch(__e) { console.error('Dashboard section error:', __e); }
-
+} catch(__e) { console.error("Section error:", __e); }
 try {
 // ── CROSS-PLATFORM ──
 let combinedChart=null,combinedMetric='spend',showCombinedTotal=true;
@@ -902,9 +888,7 @@ function buildCombinedBreakdown(){
 }
 
 
-
-} catch(__e) { console.error('Dashboard section error:', __e); }
-
+} catch(__e) { console.error("Section error:", __e); }
 try {
 // ── ALL ADVERTISERS (COMBINED) ──
 let combAdvChart=null,combAdvMetric='spend',showCombAdvTotal=true;
@@ -986,9 +970,7 @@ function updateCombAdv(){
 }
 
 
-
-} catch(__e) { console.error('Dashboard section error:', __e); }
-
+} catch(__e) { console.error("Section error:", __e); }
 try {
 // ── ABC2 FUNNEL TABLE (respects Total Portfolio toggle + chip selection) ──
 function buildABC2Table(){
@@ -1020,9 +1002,7 @@ function buildABC2Table(){
 }
 
 // ════════════════════════════════════════════════════════
-
-} catch(__e) { console.error('Dashboard section error:', __e); }
-
+} catch(__e) { console.error("Section error:", __e); }
 try {
 // ── CAMPAIGN TRACKER ────────────────────────────────────
 // ════════════════════════════════════════════════════════
@@ -1297,8 +1277,7 @@ function initTracker(){
 
 showTab('overview');
 
-} catch(__e) { console.error('Dashboard section error:', __e); }
-
+} catch(__e) { console.error("Section error:", __e); }
   if (typeof showTab === "function") window.showTab = showTab;
   if (typeof setTrendMetric === "function") window.setTrendMetric = setTrendMetric;
   if (typeof setGoogleMetric === "function") window.setGoogleMetric = setGoogleMetric;
