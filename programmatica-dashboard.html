@@ -325,12 +325,11 @@ async function loadAll() {
   MONTHLY_REV = revByAdv;
   TOTAL_REV   = sumMap(revByAdv);
 
-  // COMB_DATA (per-platform monthly totals — spend includes agency margin)
-  const markup = (arr, mult) => arr.map(v => v * mult);
+  // COMB_DATA (per-platform monthly totals — spend already includes agency margin in data.csv)
   COMB_DATA = {
     dv360:  { spend: sumMap(byPlatMetric("dv360","spend")),      imp: sumMap(byPlatMetric("dv360","impressions")),  clk: sumMap(byPlatMetric("dv360","clicks")),  conv: sumMap(byPlatMetric("dv360","conversions")),  vv: sumMap(byPlatMetric("dv360","video_views")) },
-    google: { spend: markup(G_TOT_SPEND, 1.25), imp: G_TOT_IMP, clk: G_TOT_CLK, conv: G_TOT_CONV, vv: G_TOT_VV },
-    meta:   { spend: markup(M_TOT_SPEND, 1.25), imp: M_TOT_IMP, clk: M_TOT_CLK, conv: M_TOT_CONV, vv: M_TOT_VV },
+    google: { spend: G_TOT_SPEND, imp: G_TOT_IMP, clk: G_TOT_CLK, conv: G_TOT_CONV, vv: G_TOT_VV },
+    meta:   { spend: M_TOT_SPEND, imp: M_TOT_IMP, clk: M_TOT_CLK, conv: M_TOT_CONV, vv: M_TOT_VV },
   };
 
   // MEDIA = per-advertiser DV360 totals (original behaviour)
